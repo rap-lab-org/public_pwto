@@ -1,13 +1,6 @@
-# import jax.numpy as jnp
-# from jax import grad, jit, vmap
-# from jax import random
-
-# from jax import jacfwd, jacrev
 
 import numpy as np
 import time
-# from jax import jit
-
 
 
 def fd_ddc2(x,u,dt):
@@ -69,4 +62,3 @@ if __name__ == "__main__":
   print("linear predict xnew = ", np.dot(A,x)+np.dot(B,u))
 
   print(' time used = ', time.perf_counter() - tstart)
-
