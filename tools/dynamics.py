@@ -2,6 +2,34 @@
 import numpy as np
 import time
 
+def fc_ddc2(x,u):
+  """
+  fc = continuous dynamics, ddc2 = differential-drive car 2nd-order
+  """
+  return np.array( [ np.cos(x[2])*x[3] ,\
+                     np.sin(x[2])*x[3] ,\
+                     x[4] ,\
+                     u[0] ,\
+                     u[1] ] )
+def fc_ddc2_A(x,u):
+  """
+  continuous, linearize, A
+  """
+  return np.array([[0, 0, -np.sin(x[2])*x[3], np.cos(x[2]), 0],
+                   [0, 0,  np.cos(x[2])*x[3], np.sin(x[2]), 0],
+                   [0, 0, 0, 0,  1],
+                   [0, 0, 0, 0,  0],
+                   [0, 0, 0, 0,  0]])
+
+def fc_ddc2_B(x,u):
+  """
+  continuous, linearize, B
+  """
+  return np.array([[0, 0],
+                   [0, 0],
+                   [0, 0],
+                   [1, 0],
+                   [0, 1]])
 
 def fd_ddc2(x,u,dt):
   """
