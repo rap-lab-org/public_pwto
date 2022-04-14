@@ -5,7 +5,7 @@ import time
 
 class ObstSet:
   
-  def __init__(self, obs_pos_array, cov=np.array([[1,0],[0,1]])):
+  def __init__(self, obs_pos_array, cov=np.array([[0.005, 0],[0, 0.005]])):
     """
     obs_pos_array should be a numpy 2d array.
     obs_pos_array = [[x1,y1], [x2,y2], ..., [xn,yn]] - positions of obstacles.
@@ -53,6 +53,28 @@ class ObstSet:
       b = self.mvn_list[k].pdf(pList)
       grad += np.reshape(b, [len(b),1]) * a
     return grad
+
+  def potentialField(self, xmax, ymax, npix):
+    """
+    workspace has range [0,xmax] x [0,ymax].
+    """
+    xg, yg = np.meshgrid(
+      np.linspace(0, xmax, npix), np.linspace(0, ymax, npix), indexing='ij'
+    )
+    flatgrid = np.stack([xg.flatten(), yg.flatten()], axis=1)
+
+    p = np.zeros((npix, npix))
+    # for k in range(len(self.mus)):
+    for ix in range(npix):
+      for iy in range(npix):
+        x = ix*(xmax/npix)
+        y = iy*(ymax/npix)
+        p[ix,iy] += self.pointCost(np.array([x,y]))
+      # print(" mu = ", self.mus[k])
+      # p += multivariate_normal.pdf(flatgrid, mean=self.mus[k], cov=self.cov).reshape((npix, npix))
+    # return p / np.sum(p)
+    # print(p)
+    return p
 
 if __name__ == "__main__":
 

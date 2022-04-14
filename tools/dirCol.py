@@ -8,7 +8,7 @@ import dynamics as dyn
 class NLP_ddc2:
   """
   """
-  def __init__(self, xo, xf, N, dt, Ulb, Uub, Xinit, Uinit, obss, w=100.0):
+  def __init__(self, xo, xf, N, dt, Ulb, Uub, Xinit, Uinit, obss, w):
     """
     N = length of trajectory, index range from [0,1,...,N-1]
     obss = obstacle set
@@ -28,10 +28,11 @@ class NLP_ddc2:
     self.Uub = Uub
 
     self.w = w
-    self.R = np.identity(2)*0.1
-    self.Q = np.identity(5)*0.1
+    self.R = np.identity(2)*0
+    self.Q = np.identity(5)*0
     self.Q[2:5,2:5] = np.zeros([3,3])
-    self.Qf = np.identity(5)*1000
+    self.Qf = np.identity(5)*100
+    # self.Qf[2,2] = 1000
 
     # self.lenZ = self.n+(self.N-1)*(self.m+self.n) # num of decision variables, [x0,u0,x1,u1,x2,...,nN-2,xN-1]
     self.lenZ = (self.N)*(self.m+self.n) # num of decision variables, [x0,u0,x1,u1,x2,...,nN-2,xN-1,uN-1]
@@ -149,7 +150,7 @@ class NLP_ddc2:
     dx_Qf = np.dot(dxf,self.Qf)
     J4 = 0.5*np.dot(dx_Qf, dxf)
 
-    # print("exit objective")
+    print(" objective, obst = ", J1, " state = ", J2, " control = ", J3, " final state = ", J4)
     # return J1+J2+J3
     return J1+J2+J3+J4
 
@@ -196,11 +197,11 @@ class NLP_ddc2:
 
     # 1 obst cost grad
     self.xy_tj = self.getTrajXY(Z) # cache the result for gradient usage.
-    dJ1dXY = self.obss.arrayGrad(self.xy_tj) # include x0
+    dJ1dXY = self.w*self.obss.arrayGrad(self.xy_tj) # include x0
     # print("dJ1dXY shape = ", dJ1dXY.shape)
     for k in range(self.N-1):
       a = (k)*(n+m)
-      grad[a:a+2] += dJ1dXY[k]
+      grad[a:a+2] += -dJ1dXY[k]
 
     # 2 stage state cost and 3 control cost
     for k in range(self.N-1):
@@ -297,8 +298,7 @@ class NLP_ddc2:
 
     # final state
     C[n+(self.N-1)*n : n+self.N*self.n] = self.Zx(Z,self.N-1) - self.xf
-
-    # print(">>> C[0] = ", C[0])
+    # C[n+(self.N-1)*n+2] *= 10
     return C
 
   def jacobian(self, Z):
@@ -388,7 +388,7 @@ class NLP_ddc2:
       a = (k)*(self.n+self.m)
       lb[a+self.n : a+self.m+self.n] = self.Ulb # accel
       lb[a+3] = -0.5 # min velocity
-      lb[a+4] = -0.5 # min angular vel
+      lb[a+4] = -0.9 # min angular vel
     a = (self.N-1)*(self.n+self.m)
     lb[a+self.n : a+self.m+self.n] = np.zeros(2)
     return lb
@@ -401,8 +401,8 @@ class NLP_ddc2:
     for k in range(self.N-1):
       a = (k)*(self.n+self.m)
       ub[a+self.n : a+self.m+self.n] = self.Uub
-      ub[a+3] = 2.0 # max velocity
-      ub[a+4] = 0.5 # max angular vel
+      ub[a+3] = 3.0 # max velocity
+      ub[a+4] = 0.9 # max angular vel
     a = (self.N-1)*(self.n+self.m)
     ub[a+self.n : a+self.m+self.n] = np.zeros(2)
     return ub
