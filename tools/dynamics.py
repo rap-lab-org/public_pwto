@@ -38,10 +38,10 @@ def fd_ddc2(x,u,dt):
   u = [v_dot, w_dot]
   """
   return np.array( [ x[0] + np.cos(x[2])*x[3]*dt ,\
-                      x[1] + np.sin(x[2])*x[3]*dt ,\
-                      x[2] + x[4]*dt ,\
-                      x[3] + u[0]*dt ,\
-                      x[4] + u[1]*dt ] )
+                     x[1] + np.sin(x[2])*x[3]*dt ,\
+                     x[2] + x[4]*dt ,\
+                     x[3] + u[0]*dt ,\
+                     x[4] + u[1]*dt ] )
 
 def fd_ddc2_A(x,u,dt):
   """

@@ -8,6 +8,8 @@ import dirCol as dc
 import obstacle as obs
 import dynamics as dyn
 
+import matplotlib.pyplot as plt
+
 def main1():
   
   # xo = np.array([3, 1, 0, 0, 0])
@@ -17,10 +19,10 @@ def main1():
 
   N = 11
   xo = np.array([1, 3, 0, 0, 0])
-  Uinit = np.array([[1,0],[1,0],[1,0],[1,0],[1,0],[-1,0],[-1,0],[-1,0],[-1,0],[-1,0]])
+  Uinit = np.array([[1,1],[1,0],[1,0],[1,0],[1,0],[-1,0],[-1,-1],[-1,0],[-1,0],[-1,0]])
   Xinit = np.zeros([11,5])
   Xinit[0,:] = xo
-  dt = 0.2
+  dt = 0.1
   for k in range(len(Uinit)):
     u = Uinit[k]
     Xinit[k+1,:] = dyn.fd_ddc2(Xinit[k,:],u,dt)
@@ -46,27 +48,44 @@ def main1():
   Zinit = nlp_prob.toZ(nlp_prob.Xinit, nlp_prob.Uinit)
 
   print(" constr eval = ", nlp_prob.constraints(Zinit) )
+  print(" obj eval = ", nlp_prob.objective(Zinit) )
 
   print("Zinit = ", Zinit)
+  print("grad = ", nlp_prob.gradient(Zinit))
+  jac = nlp_prob.jacobian(Zinit)
+  print("jac = ", jac.shape)
 
-  # nlp = cyipopt.Problem(
-  #    n=nlp_prob.lenZ,
-  #    m=nlp_prob.lenC,
-  #    problem_obj=nlp_prob,
-  #    lb=nlp_prob.Zlb(),
-  #    ub=nlp_prob.Zub(),
-  #    cl=np.zeros(nlp_prob.lenC),
-  #    cu=np.zeros(nlp_prob.lenC),
-  # )
+  nlp = cyipopt.Problem(
+     n=nlp_prob.lenZ,
+     m=nlp_prob.lenC,
+     problem_obj=nlp_prob,
+     lb=nlp_prob.Zlb(),
+     ub=nlp_prob.Zub(),
+     cl=np.ones(nlp_prob.lenC)*(-0.5),
+     cu=np.ones(nlp_prob.lenC)*(0.5),
+  )
 
 
   # nlp.add_option('mu_strategy', 'adaptive')
-  # nlp.add_option('tol', 1e-7)
+  # nlp.add_option('tol', 1e-3)
+  nlp.add_option('max_iter', 10)
 
-  # x, info = nlp.solve(nlp_prob.toZ(nlp_prob.Xinit, nlp_prob.Uinit))
+  x, info = nlp.solve(nlp_prob.toZ(nlp_prob.Xinit, nlp_prob.Uinit))
 
-  # print(x)
-  # print(info)
+  print(x)
+  print(info)
+
+  # fig = plt.figure(figsize=(3,3))
+  fig = plt.figure()
+
+  xy_tj = nlp_prob.getTrajXY(Zinit)
+  plt.plot(xy_tj[:,0],xy_tj[:,1],"ro--")
+
+  xy_tj = nlp_prob.getTrajXY(x)
+  plt.plot(xy_tj[:,0],xy_tj[:,1],"bo--")
+
+  plt.show()
+
 
   return
 
