@@ -41,20 +41,20 @@ class ObstSet:
     """
     grad = 0
     for k in range(len(self.mvn_list)):
-      grad += self.mvn_list[k].pdf(p) * np.dot(self.cov, (p-self.mus[k]))
+      grad -= self.mvn_list[k].pdf(p) * np.dot(self.cov, (p-self.mus[k]))
     return grad
 
   def arrayGrad(self, pList):
     """
     """
     grad = np.zeros(pList.shape)
-    # for k in range(len(self.mvn_list)):
-    #   a = np.dot((pList-self.mus[k]), self.cov)
-    #   b = self.mvn_list[k].pdf(pList)
-    #   grad += np.reshape(b, [len(b),1]) * a
     for k in range(len(self.mvn_list)):
-      for idx in range(len(pList)):
-        grad[idx,:] += self.pointGrad(pList[idx])
+      a = np.dot((pList-self.mus[k]), self.cov)
+      b = self.mvn_list[k].pdf(pList)
+      grad -= np.reshape(b, [len(b),1]) * a
+    # for k in range(len(self.mvn_list)):
+    #   for idx in range(len(pList)):
+    #     grad[idx,:] += self.pointGrad(pList[idx])
     return grad
 
   def potentialField(self, xmax, ymax, npix):

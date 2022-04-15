@@ -23,11 +23,13 @@ import context
 import obstacle as obs
 
 target_angle = np.pi
-duration = 10.0
-num_nodes = 20
+# duration = 20.0
+num_nodes = 150
 save_animation = False
 
-interval_value = duration / (num_nodes - 1)
+# interval_value = duration / (num_nodes - 1)
+interval_value = 0.1
+duration = (num_nodes-1)*interval_value
 
 # Symbolic equations of motion
 # I, m, g, d, t = sym.symbols('I, m, g, d, t')
@@ -69,11 +71,11 @@ eom = sym.Matrix([sx(t).diff() - sv(t)*sym.cos(stheta(t)),
 Sinit = np.array([0.1, 0.3, 0, 0, 0])
 Sgoal = np.array([0.6, 0.7, 0 ,0, 0])
 
-# obs_pos_array = np.array([[0.35, 0.55],[0.4, 0.55],[0.45, 0.55],[0.35, 0.4],[0.4, 0.4],[0.45, 0.4]])
-obs_pos_array = np.array([[0.35, 0.55]])
+obs_pos_array = np.array([[0.35, 0.55],[0.4, 0.55],[0.45, 0.55],[0.35, 0.4],[0.4, 0.4],[0.45, 0.4]])
+# obs_pos_array = np.array([[0.3, 0.55]])
 obss = obs.ObstSet( obs_pos_array )
 
-w1 = 10
+w1 = 0.1
 w2 = 100
 
 def obj(Z):
@@ -95,6 +97,7 @@ def obj_grad(Z):
     X,U,_ = parse_free(Z,5,2,num_nodes)
     xy_tj = X[0:2,:].T
     obst_grad = obss.arrayGrad(xy_tj)
+    print(obst_grad)
     grad[0 : num_nodes] = w2*obst_grad[:,0] # x
     grad[num_nodes : 2*num_nodes] = w2*obst_grad[:,1] # y
     grad[5 * num_nodes:] = w1*2*Z[5 * num_nodes:] # u1,u2
@@ -117,7 +120,7 @@ instance_constraints = (sx(0.0) - Sinit[0],
 # Create an optimization problem.
 prob = Problem(obj, obj_grad, eom, state_symbols, num_nodes, interval_value,
                instance_constraints=instance_constraints,
-               bounds={ua(t): (-0.5, 0.5), uw(t): (-1.0, 1.0), sv(t): (0.0, 1.5)})
+               bounds={ua(t): (-0.5, 0.5), uw(t): (-1, 1), sv(t): (0.0, 3), sw(t): (-2, 2)})
 
 # # Create an optimization problem.
 # prob = Problem(obj, obj_grad, eom, state_symbols, num_nodes, interval_value,
@@ -128,7 +131,7 @@ prob = Problem(obj, obj_grad, eom, state_symbols, num_nodes, interval_value,
 # Use a random positive initial guess.
 np.random.seed(0)
 # initial_guess = np.random.randn(prob.num_free)
-initial_guess = np.ones(prob.num_free)*0.5
+initial_guess = np.ones(prob.num_free)*0
 
 # Find the optimal solution.
 Zsol, info = prob.solve(initial_guess)
