@@ -5,7 +5,7 @@ import time
 
 class ObstSet:
   
-  def __init__(self, obs_pos_array, cov=np.array([[0.005, 0],[0, 0.005]])):
+  def __init__(self, obs_pos_array, cov=np.array([[0.001, 0],[0, 0.001]])):
     """
     obs_pos_array should be a numpy 2d array.
     obs_pos_array = [[x1,y1], [x2,y2], ..., [xn,yn]] - positions of obstacles.
@@ -48,10 +48,13 @@ class ObstSet:
     """
     """
     grad = np.zeros(pList.shape)
+    # for k in range(len(self.mvn_list)):
+    #   a = np.dot((pList-self.mus[k]), self.cov)
+    #   b = self.mvn_list[k].pdf(pList)
+    #   grad += np.reshape(b, [len(b),1]) * a
     for k in range(len(self.mvn_list)):
-      a = np.dot((pList-self.mus[k]), self.cov)
-      b = self.mvn_list[k].pdf(pList)
-      grad += np.reshape(b, [len(b),1]) * a
+      for idx in range(len(pList)):
+        grad[idx,:] += self.pointGrad(pList[idx])
     return grad
 
   def potentialField(self, xmax, ymax, npix):

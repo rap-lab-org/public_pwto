@@ -24,7 +24,7 @@ import obstacle as obs
 
 target_angle = np.pi
 duration = 10.0
-num_nodes = 20
+num_nodes = 100
 save_animation = False
 
 interval_value = duration / (num_nodes - 1)
@@ -66,11 +66,10 @@ eom = sym.Matrix([sx(t).diff() - sv(t)*sym.cos(stheta(t)),
 # Sinit = np.array([0.1, 0.2, 0.0, 0, 0])
 # Sgoal = np.array([1.2, 1.7, 0.0, 0, 0])
 
-Sinit = np.array([0.1, 0.3, 0, 0, 0])
-Sgoal = np.array([0.6, 0.7, 0 ,0, 0])
+Sinit = np.array([0.2, 0.6, 0, 0, 0])
+Sgoal = np.array([1.2, 1.4, np.pi/2 ,0, 0])
 
-# obs_pos_array = np.array([[0.35, 0.55],[0.4, 0.55],[0.45, 0.55],[0.35, 0.4],[0.4, 0.4],[0.45, 0.4]])
-obs_pos_array = np.array([[0.35, 0.55]])
+obs_pos_array = np.array([[0.7, 1.1],[0.8, 1.2]])
 obss = obs.ObstSet( obs_pos_array )
 
 w1 = 10
@@ -79,26 +78,20 @@ w2 = 100
 def obj(Z):
     """Minimize the sum of the squares of the control torque."""
     # print(Z.shape)
-    X,U,_ = parse_free(Z,5,2,num_nodes)
-    xy_tj = X[0:2,:].T
-    # print(xy_tj)
-    J1 = w1*np.sum(U**2)
-    J2 = w2*obss.arrayCost(xy_tj)
-    # print(" J1 = ", J1, " J2 = ", J2)
-    return J1 + J2
+    # X,U,_ = parse_free(Z,5,2,num_nodes)
+    U = Z[5*num_nodes:]
+    x = Z[0:num_nodes]
+    y = Z[num_nodes:2*num_nodes]
+    xy_tj = np.array([x,y]).T
+    print(" xy_tj.shape = ", xy_tj.shape)
+    print(" xy_tj[0]=",xy_tj[0])
+    return interval_value * np.sum(U**2) * w1 + w2*obss.arrayCost(xy_tj)
+
 
 def obj_grad(Z):
     grad = np.zeros_like(Z)
     # X,U = parse_free(Z,5,2,num_nodes)
-    # grad[2 * num_nodes:] = w1*2.*interval_value * Z[2 * num_nodes:]
-
-    X,U,_ = parse_free(Z,5,2,num_nodes)
-    xy_tj = X[0:2,:].T
-    obst_grad = obss.arrayGrad(xy_tj)
-    grad[0 : num_nodes] = w2*obst_grad[:,0] # x
-    grad[num_nodes : 2*num_nodes] = w2*obst_grad[:,1] # y
-    grad[5 * num_nodes:] = w1*2*Z[5 * num_nodes:] # u1,u2
-    print(grad)
+    grad[2 * num_nodes:] = w1*2.*interval_value * Z[2 * num_nodes:]
     return grad
 
 # Specify the symbolic instance constraints, i.e. initial and end
@@ -127,8 +120,7 @@ prob = Problem(obj, obj_grad, eom, state_symbols, num_nodes, interval_value,
 
 # Use a random positive initial guess.
 np.random.seed(0)
-# initial_guess = np.random.randn(prob.num_free)
-initial_guess = np.ones(prob.num_free)*0.5
+initial_guess = np.random.randn(prob.num_free)
 
 # Find the optimal solution.
 Zsol, info = prob.solve(initial_guess)
@@ -137,18 +129,7 @@ print(Zsol.shape)
 print(info)
 
 Xsol, Usol, _ = parse_free(Zsol, 5, 2, num_nodes)
-Xinit, Uinit, _ = parse_free(initial_guess, 5, 2, num_nodes)
 
-fig = plt.figure()
-
-xx = np.linspace(0,1,num=100)
-yy = np.linspace(0,1,num=100)
-Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
-pf = obss.potentialField(1,1,100)
-
-plt.contourf(X, Y, -pf, levels=np.linspace(np.min(-pf), np.max(-pf),100), cmap='gray')
-
-# plt.plot(Xinit[0,:],Xinit[1,:],"b.")
 plt.plot(Xsol[0,:],Xsol[1,:],"r.")
 plt.show()
 
