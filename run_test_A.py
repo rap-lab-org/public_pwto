@@ -1,11 +1,6 @@
-"""This solves the simple pendulum swing up problem presented here:
-
-http://hmc.csuohio.edu/resources/human-motion-seminar-jan-23-2014
-
-A simple pendulum is controlled by a torque at its joint. The goal is to
-swing the pendulum from its rest equilibrium to a target angle by minimizing
-the energy used to do so.
-
+"""
+Author: Zhongqiang (Richard) Ren
+Date: 2022-04-21
 """
 
 from collections import OrderedDict
@@ -24,85 +19,33 @@ import obstacle as obs
 
 import emoa_py_api as emoa
 
-
-def LoadMapDao(map_file):
-  grids = np.zeros((2,2))
-  with open(map_file,'r') as f:
-    lines = f.readlines()
-    lidx = 0
-    nx = 0
-    ny = 0
-    for line in lines:
-      if lidx == 1:
-        a = line.split(" ")
-        nx = int(a[1])
-      if lidx == 2:
-        a = line.split(" ")
-        ny = int(a[1])
-      if lidx == 4:
-        grids = np.zeros((nx,ny))
-      if lidx >= 4: # map data begin
-        x = lidx - 4
-        y = 0
-        a = line.split("\n")
-        # print(a[0])
-        # print(len(str(a[0])))
-        for ia in str(a[0]):
-          # print(ia)
-          if ia == "." or ia == "G":
-            grids[x,y] = 0
-          else:
-            grids[x,y] = 1
-          y = y+1
-      lidx = lidx + 1
-  return grids
-
-def findObstacles(grid):
-  """
-  """
-  out = list()
-  nyt,nxt = grid.shape
-  for iy in range(nxt):
-    for ix in range(nyt):
-      if grid[iy,ix] == 1:
-        out.append(np.array([iy,ix]))
-  return np.array(out)
+from misc import LoadMapDao, findObstacles, path2InitialGuess, linearInitGuess
 
 
+############## Global Params Begin ################
+case_ID = "A"
+Sinit = np.array([0.1, 0.1,  0, 0, 0])
+Sgoal = np.array([0.94, 0.8, 0,0, 0])
+num_nodes = 100
+interval_value = 0.1
+select_idx = 12 # change this to select diff paths.
+naive_init = False
+w1 = 0.01 # control cost, for the u terms.
+w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+############## Global Params End ################
+
+if naive_init:
+  w3 = 0
+
+duration = (num_nodes-1)*interval_value
 map_grid = LoadMapDao("runtime_data/random-32-32-20.map")
 obsts_all = findObstacles(map_grid)
 obsts = obsts_all / 32.0
-print(obsts)
-
-Sinit = np.array([0.1, 0.1, 0, 0, 0])
-Sgoal = np.array([0.9, 0.8, 0 ,0, 0])
-
-num_nodes = 100
-save_animation = False
-
-# interval_value = duration / (num_nodes - 1)
-interval_value = 0.1
-duration = (num_nodes-1)*interval_value
-
-# obs_pos_array = np.array([[0.35, 0.55],[0.4, 0.55],[0.45, 0.55],[0.35, 0.4],[0.4, 0.4],[0.45, 0.4]])
-# obs_pos_array = np.array([[0.3, 0.55]])
-# obss = obs.ObstSet( obs_pos_array )
 obss = obs.ObstSet( obsts )
 npix = 100
-print("start to compute pf...")
+print("[INFO] start to compute pf...")
 pf = obss.potentialField(1,1,npix)*100
-print("pf done...")
-
-## convert to a 100x100 grid
-c1 = np.ones([npix,npix]) # distance
-c2 = pf # dist to obstacle
-
-vo = int(Sinit[0]*npix*npix + Sinit[1]*npix)
-vd = int(Sgoal[0]*npix*npix + Sgoal[1]*npix)
-
-res_dict = emoa.runEMOA([c1,c2], "runtime_data/", "../public_emoa/build/run_emoa", "runtime_data/temp-res.txt", vo, vd, 60)
-print(res_dict)
-
 
 fig = plt.figure(figsize=(5,5))
 
@@ -112,67 +55,87 @@ Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
 print("pf range = ", np.mean(pf), np.median(pf), np.max(pf))
 # plt.contourf(X, Y, -pf, levels=np.linspace(np.min(-pf), np.max(-pf),100), cmap='gray')
 plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),500), cmap='gray_r')
+plt.plot(Sinit[0],Sinit[1],"ro")
+plt.plot(Sgoal[0],Sgoal[1],"r*")
 
-paths = res_dict['paths']
-select_path_x = []
-select_path_y = []
-for k in paths:
-    p = paths[k]
-    px = list()
-    py = list()
-    for v in p:
-        py.append( (v%npix)*(1/npix) )
-        px.append( int(np.floor(v/npix))*(1.0/npix) )
-    select_path_x = px
-    select_path_y = py
-    plt.plot(px,py,"g--")
 plt.draw()
 plt.pause(1)
-# print(" select_path_x = ", select_path_x)
-# print(" select_path_y = ", select_path_y)
+plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-pf-k-"+str(select_idx)+".png", bbox_inches='tight', dpi=200)
+
+######### Fig 2.
+
+if not naive_init:
+    ## convert to a 100x100 grid
+    c1 = np.ones([npix,npix]) # distance
+    c2 = pf # dist to obstacle
+
+    vo = int(Sinit[0]*npix*npix + Sinit[1]*npix)
+    vd = int(Sgoal[0]*npix*npix + Sgoal[1]*npix)
+
+    res_dict = emoa.runEMOA([c1,c2], "runtime_data/", "../public_emoa/build/run_emoa", "runtime_data/temp-res.txt", vo, vd, 60)
+    # print(res_dict['n_sol'])
+
+    fig = plt.figure(figsize=(5,5))
+
+    xx = np.linspace(0,1,num=100)
+    yy = np.linspace(0,1,num=100)
+    Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
+    print("pf range = ", np.mean(pf), np.median(pf), np.max(pf))
+    # plt.contourf(X, Y, -pf, levels=np.linspace(np.min(-pf), np.max(-pf),100), cmap='gray')
+    plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),500), cmap='gray_r')
+    plt.plot(Sinit[0],Sinit[1],"ro")
+    plt.plot(Sgoal[0],Sgoal[1],"r*")
+
+    paths = res_dict['paths']
+    select_path_x = []
+    select_path_y = []
+    idx = 0
+    for k in paths:
+        p = paths[k]
+        px = list()
+        py = list()
+        for v in p:
+            py.append( (v%npix)*(1/npix) )
+            px.append( int(np.floor(v/npix))*(1.0/npix) )
+        plt.plot(px,py,"g--")
+        if idx == select_idx:
+          select_path_x = px
+          select_path_y = py
+        idx += 1
+    plt.draw()
+    plt.pause(1)
+    # print(" select_path_x = ", select_path_x)
+    # print(" select_path_y = ", select_path_y)
+
+initial_guess = []
+if naive_init:
+  initial_guess = linearInitGuess(Sinit[0:2], Sgoal[0:2], num_nodes, 5, 2, interval_value)
+else:
+  initial_guess = path2InitialGuess(select_path_x, select_path_y, num_nodes, 5, 2, interval_value)
+  plt.plot(initial_guess[:num_nodes],initial_guess[num_nodes:2*num_nodes],"b")
+  plt.draw()
+  plt.pause(1)
+  plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-pareto_paths-k-"+str(select_idx)+".png", bbox_inches='tight', dpi=200)
 
 
-def path2InitialGuess(px, py, n_nodes):
-  """
-  p = path find by EMOA*.
-  """
-  print("px = ", px)
-  print("py = ", py)
-  lp = len(px)
-  n = 5
-  m = 2
-  initial_guess = np.ones(n_nodes*(n+m))*0
-  for i in range(n_nodes):
-    idx = int( np.floor( lp*(i/n_nodes) ) )
-    idy = idx + 1
-    if idy >= lp:
-      idy = idx
-    initial_guess[i] = px[idx] # x
-    initial_guess[n_nodes+i] = py[idx] # y
-  for i in range(1,n_nodes):
-    dy = initial_guess[i] - initial_guess[i-1]
-    dx = initial_guess[n_nodes+i] - initial_guess[n_nodes+i-1]
-    initial_guess[2*n_nodes+i-1] = np.arctan2(dy,dx) # theta
-    initial_guess[3*n_nodes+i-1] = np.sqrt(dy**2+dx**2) / interval_value # v
-  sidx = n*(n_nodes)
-  for i in range(1,n_nodes):
-    dtheta = initial_guess[2*n_nodes+i] - initial_guess[2*n_nodes+i-1]
-    dtheta = np.arctan2(np.cos(dtheta),np.sin(dtheta)) # round to [-pi,pi]
-    initial_guess[4*n_nodes+i-1] = ( dtheta ) / interval_value # w
-  for i in range(1,n_nodes):
-    dy = initial_guess[i] - initial_guess[i-1]
-    dx = initial_guess[n_nodes+i] - initial_guess[n_nodes+i-1]
-    initial_guess[sidx+i-1] = ( initial_guess[3*n_nodes+i] - initial_guess[3*n_nodes+i-1] ) / interval_value # ua
-    dw = ( initial_guess[4*n_nodes+i] - initial_guess[4*n_nodes+i-1] )
-    initial_guess[sidx+n_nodes+i-1] = dw / interval_value # uw
-  return initial_guess
+### Fig 2b, Pareto front
 
-initial_guess = path2InitialGuess(select_path_x, select_path_y, num_nodes)
-print("initial_guess[:num_nodes] = ", initial_guess[:num_nodes])
-print("initial_guess[num_nodes:2*num_nodes] = ", initial_guess[num_nodes:2*num_nodes])
-plt.plot(initial_guess[:num_nodes],initial_guess[num_nodes:2*num_nodes],"b")
-plt.draw()
-plt.pause(1)
+if not naive_init:
+    fig = plt.figure(figsize=(3,3))
+
+    res_dict['costs']
+    idx = 0
+    for k in res_dict['costs']:
+        c = res_dict['costs'][k]
+        plt.plot(c[0],c[1],"go")
+        if idx == select_idx:
+            plt.plot(c[0],c[1],"bs")
+        idx += 1
+
+    plt.grid()
+    plt.draw()
+    plt.pause(1)
+    plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-pareto_front-k-"+str(select_idx)+".png", bbox_inches='tight', dpi=200)
 
 
 # Symbolic equations of motion
@@ -212,9 +175,7 @@ eom = sym.Matrix([sx(t).diff() - sv(t)*sym.cos(stheta(t)),
 # Sinit = np.array([0.1, 0.2, 0.0, 0, 0])
 # Sgoal = np.array([1.2, 1.7, 0.0, 0, 0])
 
-w1 = 0
-w2 = 1000
-w3 = 80
+
 
 def obj(Z):
     """Minimize the sum of the squares of the control torque."""
@@ -251,12 +212,12 @@ def obj_grad(Z):
 # conditions.
 instance_constraints = (sx(0.0) - Sinit[0],
                         sy(0.0) - Sinit[1],
-                        stheta(0.0) - Sinit[2],
+                        # stheta(0.0) - Sinit[2],
                         sv(0.0) - Sinit[3],
                         sw(0.0) - Sinit[4],
                         sx(duration) - Sgoal[0],
                         sy(duration) - Sgoal[1],
-                        stheta(duration) - Sgoal[2],
+                        # stheta(duration) - Sgoal[2],
                         sv(duration) - Sgoal[3],
                         sw(duration) - Sgoal[4] )
 
@@ -265,17 +226,6 @@ instance_constraints = (sx(0.0) - Sinit[0],
 prob = Problem(obj, obj_grad, eom, state_symbols, num_nodes, interval_value,
                instance_constraints=instance_constraints,
                bounds={sx(t): (0,1), sy(t): (0,1), ua(t): (-1, 1), uw(t): (-5, 5), sv(t): (0, 0.2), sw(t): (-5, 5)})
-
-
-# prob = Problem(obj, obj_grad, eom, state_symbols, num_nodes, interval_value,
-#                instance_constraints=instance_constraints,
-#                bounds={ua(t): (-1, 1), uw(t): (-2, 2), sv(t): (0.0, 3), sw(t): (-2, 2)})
-
-# # Create an optimization problem.
-# prob = Problem(obj, obj_grad, eom, state_symbols, num_nodes, interval_value,
-#                known_parameter_map=par_map,
-#                instance_constraints=instance_constraints,
-#                bounds={T(t): (-2.0, 2.0)})
 
 prob.addOption("max_iter",500)
 
@@ -288,22 +238,60 @@ prob.addOption("max_iter",500)
 # Find the optimal solution.
 Zsol, info = prob.solve(initial_guess)
 
-print(Zsol.shape)
-print(info)
+# print(Zsol.shape)
 
 Xsol, Usol, _ = parse_free(Zsol, 5, 2, num_nodes)
 Xinit, Uinit, _ = parse_free(initial_guess, 5, 2, num_nodes)
 
-# fig = plt.figure()
 
-# xx = np.linspace(0,1,num=100)
-# yy = np.linspace(0,1,num=100)
-# Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
-# pf = obss.potentialField(1,1,100)
+### Fig 3
 
-# plt.plot(Xinit[0,:],Xinit[1,:],"b.")
+fig = plt.figure(figsize=(5,5))
+
+xx = np.linspace(0,1,num=100)
+yy = np.linspace(0,1,num=100)
+Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
+print("pf range = ", np.mean(pf), np.median(pf), np.max(pf))
+# plt.contourf(X, Y, -pf, levels=np.linspace(np.min(-pf), np.max(-pf),100), cmap='gray')
+plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),500), cmap='gray_r')
+plt.plot(Sinit[0],Sinit[1],"ro")
+plt.plot(Sgoal[0],Sgoal[1],"r*")
+
+plt.plot(initial_guess[:num_nodes],initial_guess[num_nodes:2*num_nodes],"b")
+
 plt.plot(Xsol[0,:],Xsol[1,:],"r.")
-plt.show()
+
+plt.draw()
+plt.pause(1)
+if naive_init:
+    plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-traj-k-naiveInit.png", bbox_inches='tight', dpi=200)
+else:
+    plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-traj-k-"+str(select_idx)+".png", bbox_inches='tight', dpi=200)
+
+# for k in info:
+#     print(" - ", k, " = ", info[k])
+
+if not naive_init:
+    print("---------------------SOLUTION RESULT BEGIN------------------------")
+    print("[RESULT] EMOA*, search time = ", res_dict['rt_search'])
+    print("[RESULT] EMOA*, num solutions = ", res_dict['n_sol'])
+    print("[RESULT] IPOPT, traj optm obj val = ", info['obj_val'])
+    # print("[RESULT] IPOPT, traj optm obj val = ", info['iterations'])
+    print("---------------------SOLUTION RESULT END------------------------")
+
+# k=0,
+# obj_val =  9241846.239216723
+
+# k=4
+# obj_val =  2393952.9546941686
+
+# k=10
+# obj_val =  2069354.6288007454
+
+# k = 5
+# obj_val =  2204654.1269005644
+
+
 
 # Make some plots
 # prob.plot_trajectories(solution)
@@ -344,4 +332,4 @@ plt.show()
 #         ani.save('pendulum_swing_up.mp4', writer='ffmpeg',
 #                  fps=1 / interval_value)
 
-plt.show()
+# plt.show()
