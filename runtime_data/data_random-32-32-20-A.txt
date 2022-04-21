@@ -1,0 +1,415 @@
+
+##### k=0 #####
+
+Number of Iterations....: 285
+
+                                   (scaled)                 (unscaled)
+Objective...............:   1.0763688760122776e+07    1.0763688760122776e+07
+Dual infeasibility......:   5.0692854337786915e-03    5.0692854337786915e-03
+Constraint violation....:   4.0176195703622852e-15    4.0176195703622852e-15
+Complementarity.........:   1.0309524159718935e-11    1.0309524159718935e-11
+Overall NLP error.......:   5.0692854337786915e-03    5.0692854337786915e-03
+
+
+Number of objective function evaluations             = 2758
+Number of objective gradient evaluations             = 287
+Number of equality constraint evaluations            = 2758
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 289
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      0.848
+Total CPU secs in NLP function evaluations           =      8.243
+
+EXIT: Restoration Failed!
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.153278
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  10763688.760122776
+---------------------SOLUTION RESULT END------------------------
+
+
+##### k=1 #####
+
+Number of Iterations....: 264
+
+                                   (scaled)                 (unscaled)
+Objective...............:   2.8549916469434337e+06    2.8549916469434337e+06
+Dual infeasibility......:   1.8080058048706011e-02    1.8080058048706011e-02
+Constraint violation....:   2.9993715844334190e-12    2.9993715844334190e-12
+Complementarity.........:   1.0085328113226235e-11    1.0085328113226235e-11
+Overall NLP error.......:   1.8080058048706011e-02    1.8080058048706011e-02
+
+
+Number of objective function evaluations             = 1752
+Number of objective gradient evaluations             = 266
+Number of equality constraint evaluations            = 1752
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 267
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      0.764
+Total CPU secs in NLP function evaluations           =      5.552
+
+EXIT: Restoration Failed!
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.156841
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  2854991.6469434337
+---------------------SOLUTION RESULT END------------------------
+
+
+
+##### k=2 #####
+
+Number of Iterations....: 355
+
+                                   (scaled)                 (unscaled)
+Objective...............:   2.6580719499386111e+06    2.6580719499386111e+06
+Dual infeasibility......:   1.7967791414909609e-01    1.7967791414909609e-01
+Constraint violation....:   6.0770832810419506e-13    6.0770832810419506e-13
+Complementarity.........:   1.4580953063425803e-11    1.4580953063425803e-11
+Overall NLP error.......:   1.7967791414909609e-01    1.7967791414909609e-01
+
+
+Number of objective function evaluations             = 2319
+Number of objective gradient evaluations             = 357
+Number of equality constraint evaluations            = 2319
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 359
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      1.033
+Total CPU secs in NLP function evaluations           =      7.192
+
+EXIT: Restoration Failed!
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.15692
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  2658071.949938611
+---------------------SOLUTION RESULT END------------------------
+
+
+
+##### k=3 #####
+
+Number of Iterations....: 474
+
+                                   (scaled)                 (unscaled)
+Objective...............:   2.3939529546941686e+06    2.3939529546941686e+06
+Dual infeasibility......:   3.2147939032615607e-03    3.2147939032615607e-03
+Constraint violation....:   2.2394586185470189e-13    2.2394586185470189e-13
+Complementarity.........:   1.0112898520070940e-11    1.0112898520070940e-11
+Overall NLP error.......:   3.2147939032615607e-03    3.2147939032615607e-03
+
+
+Number of objective function evaluations             = 2439
+Number of objective gradient evaluations             = 476
+Number of equality constraint evaluations            = 2439
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 478
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      1.310
+Total CPU secs in NLP function evaluations           =      8.055
+
+EXIT: Restoration Failed!
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.156924
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  2393952.9546941686
+---------------------SOLUTION RESULT END------------------------
+
+
+##### k=4 #####
+
+
+Number of Iterations....: 500
+
+                                   (scaled)                 (unscaled)
+Objective...............:   2.2046541269005644e+06    2.2046541269005644e+06
+Dual infeasibility......:   3.1185667038420025e+01    3.1185667038420025e+01
+Constraint violation....:   4.1918408184529743e-05    4.1918408184529743e-05
+Complementarity.........:   1.3676699073267117e-04    1.3676699073267117e-04
+Overall NLP error.......:   3.1185667038420025e+01    3.1185667038420025e+01
+
+
+Number of objective function evaluations             = 2988
+Number of objective gradient evaluations             = 501
+Number of equality constraint evaluations            = 2988
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 503
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      1.354
+Total CPU secs in NLP function evaluations           =      9.603
+
+EXIT: Maximum Number of Iterations Exceeded.
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.153669
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  2204654.1269005644
+---------------------SOLUTION RESULT END------------------------
+
+
+##### k=5 #####
+
+
+Number of Iterations....: 304
+
+                                   (scaled)                 (unscaled)
+Objective...............:   3.2963533228732063e+06    3.2963533228732063e+06
+Dual infeasibility......:   1.5805122749107652e-03    1.5805122749107652e-03
+Constraint violation....:   7.4704131769465221e-14    7.4704131769465221e-14
+Complementarity.........:   2.1640826056220673e-09    2.1640826056220673e-09
+Overall NLP error.......:   1.5805122749107652e-03    1.5805122749107652e-03
+
+
+Number of objective function evaluations             = 2825
+Number of objective gradient evaluations             = 304
+Number of equality constraint evaluations            = 2825
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 311
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      0.833
+Total CPU secs in NLP function evaluations           =      8.304
+
+EXIT: Restoration Failed!
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.157418
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  3296353.3228732063
+---------------------SOLUTION RESULT END------------------------
+
+
+##### k=6 #####
+
+Number of Iterations....: 435
+
+                                   (scaled)                 (unscaled)
+Objective...............:   2.7644736343082967e+06    2.7644736343082967e+06
+Dual infeasibility......:   2.0191362943479133e-02    2.0191362943479133e-02
+Constraint violation....:   2.7339797092906792e-12    2.7339797092906792e-12
+Complementarity.........:   6.7038494494308935e-11    6.7038494494308935e-11
+Overall NLP error.......:   2.0191362943479133e-02    2.0191362943479133e-02
+
+
+Number of objective function evaluations             = 2786
+Number of objective gradient evaluations             = 437
+Number of equality constraint evaluations            = 2786
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 440
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      1.242
+Total CPU secs in NLP function evaluations           =      8.809
+
+EXIT: Restoration Failed!
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.155612
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  2764473.6343082967
+---------------------SOLUTION RESULT END------------------------
+
+
+
+##### k=7 #####
+
+Number of Iterations....: 327
+
+                                   (scaled)                 (unscaled)
+Objective...............:   2.5902315820034132e+06    2.5902315820034132e+06
+Dual infeasibility......:   6.7274482049339487e-03    6.7274482049339487e-03
+Constraint violation....:   1.9745663437653604e-12    1.9745663437653604e-12
+Complementarity.........:   1.7393463409922914e-07    1.7393463409922914e-07
+Overall NLP error.......:   6.7274482049339487e-03    6.7274482049339487e-03
+
+
+Number of objective function evaluations             = 2108
+Number of objective gradient evaluations             = 325
+Number of equality constraint evaluations            = 2108
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 334
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      0.954
+Total CPU secs in NLP function evaluations           =      6.863
+
+EXIT: Restoration Failed!
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.155384
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  2590231.5820034132
+---------------------SOLUTION RESULT END------------------------
+
+
+
+##### k=8 #####
+
+Number of Iterations....: 313
+
+                                   (scaled)                 (unscaled)
+Objective...............:   2.8053681674613450e+06    2.8053681674613450e+06
+Dual infeasibility......:   2.1819956647442648e-03    2.1819956647442648e-03
+Constraint violation....:   1.2299189444675562e-14    1.2299189444675562e-14
+Complementarity.........:   1.1502534309907754e-11    1.1502534309907754e-11
+Overall NLP error.......:   2.1819956647442648e-03    2.1819956647442648e-03
+
+
+Number of objective function evaluations             = 2351
+Number of objective gradient evaluations             = 316
+Number of equality constraint evaluations            = 2352
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 317
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      0.879
+Total CPU secs in NLP function evaluations           =      7.437
+
+EXIT: Restoration Failed!
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.153416
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  2805368.167461345
+---------------------SOLUTION RESULT END------------------------
+
+
+
+##### k=9 #####
+
+Number of Iterations....: 496
+
+                                   (scaled)                 (unscaled)
+Objective...............:   2.3903167512485227e+06    2.3903167512485227e+06
+Dual infeasibility......:   9.3919552168691511e-04    9.3919552168691511e-04
+Constraint violation....:   5.2735593669694936e-15    5.2735593669694936e-15
+Complementarity.........:   1.5031268694931336e-09    1.5031268694931336e-09
+Overall NLP error.......:   9.3919552168691511e-04    9.3919552168691511e-04
+
+
+Number of objective function evaluations             = 3037
+Number of objective gradient evaluations             = 498
+Number of equality constraint evaluations            = 3037
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 502
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      1.360
+Total CPU secs in NLP function evaluations           =      9.719
+
+EXIT: Restoration Failed!
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.157703
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  2390316.7512485227
+---------------------SOLUTION RESULT END------------------------
+
+
+
+##### k=10 #####
+
+Number of Iterations....: 500
+
+                                   (scaled)                 (unscaled)
+Objective...............:   2.5361659082196387e+06    2.5361659082196387e+06
+Dual infeasibility......:   8.9118527620563005e-04    8.9118527620563005e-04
+Constraint violation....:   2.8865798640254070e-15    2.8865798640254070e-15
+Complementarity.........:   1.0178337596797981e-11    1.0178337596797981e-11
+Overall NLP error.......:   8.9118527620563005e-04    8.9118527620563005e-04
+
+
+Number of objective function evaluations             = 3288
+Number of objective gradient evaluations             = 498
+Number of equality constraint evaluations            = 3288
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 507
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      1.382
+Total CPU secs in NLP function evaluations           =     10.324
+
+EXIT: Maximum Number of Iterations Exceeded.
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.155195
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  2536165.9082196387
+---------------------SOLUTION RESULT END------------------------
+
+
+
+##### k=11 #####
+
+Number of Iterations....: 382
+
+                                   (scaled)                 (unscaled)
+Objective...............:   2.0693546288007454e+06    2.0693546288007454e+06
+Dual infeasibility......:   2.7198107002967089e-04    2.7198107002967089e-04
+Constraint violation....:   4.1633363423443370e-15    4.1633363423443370e-15
+Complementarity.........:   1.0129919449611951e-11    1.0129919449611951e-11
+Overall NLP error.......:   2.7198107002967089e-04    2.7198107002967089e-04
+
+
+Number of objective function evaluations             = 1573
+Number of objective gradient evaluations             = 384
+Number of equality constraint evaluations            = 1573
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 387
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      1.078
+Total CPU secs in NLP function evaluations           =      5.514
+
+EXIT: Restoration Failed!
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.152973
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  2069354.6288007454
+---------------------SOLUTION RESULT END------------------------
+
+
+##### k=12 #####
+
+Number of Iterations....: 386
+
+                                   (scaled)                 (unscaled)
+Objective...............:   5.5273842133630533e+06    5.5273842133630533e+06
+Dual infeasibility......:   2.7602425576879115e-03    2.7602425576879115e-03
+Constraint violation....:   6.6752159355587537e-15    6.6752159355587537e-15
+Complementarity.........:   1.1258628315973754e-11    1.1258628315973754e-11
+Overall NLP error.......:   2.7602425576879115e-03    2.7602425576879115e-03
+
+
+Number of objective function evaluations             = 2913
+Number of objective gradient evaluations             = 388
+Number of equality constraint evaluations            = 2913
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 390
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      1.165
+Total CPU secs in NLP function evaluations           =      9.003
+
+EXIT: Restoration Failed!
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
+---------------------SOLUTION RESULT BEGIN------------------------
+[RESULT] EMOA*, search time =  0.153216
+[RESULT] EMOA*, num solutions =  13
+[RESULT] IPOPT, traj optm obj val =  5527384.213363053
+---------------------SOLUTION RESULT END------------------------
+
+
+
+

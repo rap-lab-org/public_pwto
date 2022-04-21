@@ -1,6 +1,8 @@
 
 
+import heapq as hpq
 import numpy as np
+import copy
 
 
 def LoadMapDao(map_file):
@@ -100,3 +102,67 @@ def linearInitGuess(pstart, pend, n_nodes, n, m, interval_value):
     initial_guess[sidx+n_nodes+i-1] = dw / interval_value # uw
 
   return initial_guess
+
+
+class PrioritySet(object):
+  """
+  priority queue, min-heap
+  """
+  def __init__(self):
+    """
+    no duplication allowed
+    """
+    self.heap_ = []
+    self.set_ = set()
+  def add(self, pri, d):
+    """
+    will check for duplication and avoid.
+    """
+    if not d in self.set_:
+        hpq.heappush(self.heap_, (pri, d))
+        self.set_.add(d)
+  def pop(self):
+    """
+    impl detail: return the first(min) item that is in self.set_
+    """
+    pri, d = hpq.heappop(self.heap_)
+    while d not in self.set_:
+      pri, d = hpq.heappop(self.heap_)
+    self.set_.remove(d)
+    return pri, d
+  def size(self):
+    return len(self.set_)
+  def print(self):
+    print(self.heap_)
+    print(self.set_)
+    return
+  def remove(self, d):
+    """
+    implementation: only remove from self.set_, not remove from self.heap_ list.
+    """
+    if not d in self.set_:
+      return False
+    self.set_.remove(d)
+    return True
+
+def lexSortResult( res_dict ):
+  """
+  """
+  pq = PrioritySet()
+  for k in res_dict["costs"]:
+    pq.add(tuple(res_dict["costs"][k]), k)
+  k_list = list()
+  while pq.size() > 0:
+    cvec, k = pq.pop()
+    print(" cvec = ", cvec, " k = ", k)
+    k_list.append(k)
+  new_cdict = dict()
+  new_pdict = dict()
+  idx = 0
+  for k in k_list:
+    new_cdict[idx] = res_dict["costs"][k]
+    new_pdict[idx] = res_dict["paths"][k]
+    idx += 1
+  res_dict["paths"] = new_pdict
+  res_dict["costs"] = new_cdict
+  return 
