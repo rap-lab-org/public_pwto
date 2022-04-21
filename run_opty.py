@@ -75,7 +75,14 @@ obsts = obsts_all / 32.0
 print(obsts)
 
 Sinit = np.array([0.1, 0.1, 0, 0, 0])
-Sgoal = np.array([0.8, 0.7, 0 ,0, 0])
+Sgoal = np.array([0.9, 0.8, 0 ,0, 0])
+
+num_nodes = 100
+save_animation = False
+
+# interval_value = duration / (num_nodes - 1)
+interval_value = 0.1
+duration = (num_nodes-1)*interval_value
 
 # obs_pos_array = np.array([[0.35, 0.55],[0.4, 0.55],[0.45, 0.55],[0.35, 0.4],[0.4, 0.4],[0.45, 0.4]])
 # obs_pos_array = np.array([[0.3, 0.55]])
@@ -97,12 +104,14 @@ res_dict = emoa.runEMOA([c1,c2], "runtime_data/", "../public_emoa/build/run_emoa
 print(res_dict)
 
 
-fig = plt.figure(figsize=(10,10))
+fig = plt.figure(figsize=(5,5))
 
 xx = np.linspace(0,1,num=100)
 yy = np.linspace(0,1,num=100)
 Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
-plt.contourf(X, Y, -pf, levels=np.linspace(np.min(-pf), np.max(-pf),100), cmap='gray')
+print("pf range = ", np.mean(pf), np.median(pf), np.max(pf))
+# plt.contourf(X, Y, -pf, levels=np.linspace(np.min(-pf), np.max(-pf),100), cmap='gray')
+plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),500), cmap='gray_r')
 
 paths = res_dict['paths']
 select_path_x = []
@@ -113,24 +122,58 @@ for k in paths:
     py = list()
     for v in p:
         py.append( (v%npix)*(1/npix) )
-        px.append( int(np.floor(v/npix))*(1/npix) )
+        px.append( int(np.floor(v/npix))*(1.0/npix) )
     select_path_x = px
     select_path_y = py
-    plt.plot(px,py,"b")
+    plt.plot(px,py,"g--")
 plt.draw()
-plt.pause(2)
+plt.pause(1)
+# print(" select_path_x = ", select_path_x)
+# print(" select_path_y = ", select_path_y)
 
 
-print(" select_path_x = ", select_path_x)
+def path2InitialGuess(px, py, n_nodes):
+  """
+  p = path find by EMOA*.
+  """
+  print("px = ", px)
+  print("py = ", py)
+  lp = len(px)
+  n = 5
+  m = 2
+  initial_guess = np.ones(n_nodes*(n+m))*0
+  for i in range(n_nodes):
+    idx = int( np.floor( lp*(i/n_nodes) ) )
+    idy = idx + 1
+    if idy >= lp:
+      idy = idx
+    initial_guess[i] = px[idx] # x
+    initial_guess[n_nodes+i] = py[idx] # y
+  for i in range(1,n_nodes):
+    dy = initial_guess[i] - initial_guess[i-1]
+    dx = initial_guess[n_nodes+i] - initial_guess[n_nodes+i-1]
+    initial_guess[2*n_nodes+i-1] = np.arctan2(dy,dx) # theta
+    initial_guess[3*n_nodes+i-1] = np.sqrt(dy**2+dx**2) / interval_value # v
+  sidx = n*(n_nodes)
+  for i in range(1,n_nodes):
+    dtheta = initial_guess[2*n_nodes+i] - initial_guess[2*n_nodes+i-1]
+    dtheta = np.arctan2(np.cos(dtheta),np.sin(dtheta)) # round to [-pi,pi]
+    initial_guess[4*n_nodes+i-1] = ( dtheta ) / interval_value # w
+  for i in range(1,n_nodes):
+    dy = initial_guess[i] - initial_guess[i-1]
+    dx = initial_guess[n_nodes+i] - initial_guess[n_nodes+i-1]
+    initial_guess[sidx+i-1] = ( initial_guess[3*n_nodes+i] - initial_guess[3*n_nodes+i-1] ) / interval_value # ua
+    dw = ( initial_guess[4*n_nodes+i] - initial_guess[4*n_nodes+i-1] )
+    initial_guess[sidx+n_nodes+i-1] = dw / interval_value # uw
+  return initial_guess
 
-target_angle = np.pi
-# duration = 20.0
-num_nodes = 150
-save_animation = False
+initial_guess = path2InitialGuess(select_path_x, select_path_y, num_nodes)
+print("initial_guess[:num_nodes] = ", initial_guess[:num_nodes])
+print("initial_guess[num_nodes:2*num_nodes] = ", initial_guess[num_nodes:2*num_nodes])
+plt.plot(initial_guess[:num_nodes],initial_guess[num_nodes:2*num_nodes],"b")
+plt.draw()
+plt.pause(1)
 
-# interval_value = duration / (num_nodes - 1)
-interval_value = 0.1
-duration = (num_nodes-1)*interval_value
 
 # Symbolic equations of motion
 # I, m, g, d, t = sym.symbols('I, m, g, d, t')
@@ -169,8 +212,9 @@ eom = sym.Matrix([sx(t).diff() - sv(t)*sym.cos(stheta(t)),
 # Sinit = np.array([0.1, 0.2, 0.0, 0, 0])
 # Sgoal = np.array([1.2, 1.7, 0.0, 0, 0])
 
-w1 = 0.1
-w2 = 10000
+w1 = 0
+w2 = 1000
+w3 = 80
 
 def obj(Z):
     """Minimize the sum of the squares of the control torque."""
@@ -180,8 +224,9 @@ def obj(Z):
     # print(xy_tj)
     J1 = w1*np.sum(U**2)
     J2 = w2*obss.arrayCost(xy_tj)
-    # print(" J1 = ", J1, " J2 = ", J2)
-    return J1 + J2
+    J3 = w3*np.sum( (X[0,:]-initial_guess[:num_nodes])**2 + (X[1,:]-initial_guess[num_nodes:2*num_nodes])**2 )
+    # print(" J1 = ", J1, " J2 = ", J2, " J3 = ", J3)
+    return J1 + J2 + J3
 
 def obj_grad(Z):
     grad = np.zeros_like(Z)
@@ -191,11 +236,15 @@ def obj_grad(Z):
     X,U,_ = parse_free(Z,5,2,num_nodes)
     xy_tj = X[0:2,:].T
     obst_grad = obss.arrayGrad(xy_tj)
+
+    grad[5 * num_nodes:] = w1*2*Z[5 * num_nodes:] # u1,u2
+
     # print(obst_grad)
     grad[0 : num_nodes] = w2*obst_grad[:,0] # x
     grad[num_nodes : 2*num_nodes] = w2*obst_grad[:,1] # y
-    grad[5 * num_nodes:] = w1*2*Z[5 * num_nodes:] # u1,u2
     # print(grad)
+    grad[0: num_nodes] += w3*( X[0,:]-initial_guess[:num_nodes] )
+    grad[num_nodes: 2*num_nodes] += w3*( X[1,:]-initial_guess[num_nodes:2*num_nodes] )
     return grad
 
 # Specify the symbolic instance constraints, i.e. initial and end
@@ -215,7 +264,7 @@ instance_constraints = (sx(0.0) - Sinit[0],
 
 prob = Problem(obj, obj_grad, eom, state_symbols, num_nodes, interval_value,
                instance_constraints=instance_constraints,
-               bounds={ua(t): (-0.5, 0.5), uw(t): (-1, 1), sv(t): (0.0, 3), sw(t): (-3, 3)})
+               bounds={sx(t): (0,1), sy(t): (0,1), ua(t): (-1, 1), uw(t): (-5, 5), sv(t): (0, 0.2), sw(t): (-5, 5)})
 
 
 # prob = Problem(obj, obj_grad, eom, state_symbols, num_nodes, interval_value,
@@ -228,27 +277,8 @@ prob = Problem(obj, obj_grad, eom, state_symbols, num_nodes, interval_value,
 #                instance_constraints=instance_constraints,
 #                bounds={T(t): (-2.0, 2.0)})
 
-prob.addOption("max_iter",100)
+prob.addOption("max_iter",500)
 
-def path2InitialGuess(px, py, n_nodes):
-  """
-  p = path find by EMOA*.
-  """
-  initial_guess = np.ones(prob.num_free)*0
-  lp = len(px)
-  for i in range(n_nodes):
-    idx = int( np.floor( lp*(i/n_nodes) ) )
-    # idy = idx + 1
-    # if idy >= lp:
-      # idy = idx
-    initial_guess[i*7] = px[idx]
-    initial_guess[i*7+1] = py[idx]
-    # initial_guess[i*7+5:i*7+7]
-  return initial_guess
-
-initial_guess = path2InitialGuess(select_path_x, select_path_y, num_nodes)
-
-plt.plot(px,py,"g")
 
 # # Use a random positive initial guess.
 # np.random.seed(0)

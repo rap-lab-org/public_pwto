@@ -3,9 +3,11 @@ import numpy as np
 from scipy.stats import multivariate_normal
 import time
 
+FIX_COV_VAL = 1e-4
+
 class ObstSet:
   
-  def __init__(self, obs_pos_array, cov=np.array([[0.0001, 0],[0, 0.0001]])):
+  def __init__(self, obs_pos_array, cov=np.array([[FIX_COV_VAL, 0],[0, FIX_COV_VAL]])):
     """
     obs_pos_array should be a numpy 2d array.
     obs_pos_array = [[x1,y1], [x2,y2], ..., [xn,yn]] - positions of obstacles.
