@@ -412,4 +412,29 @@ pf range =  20165.35732163739 1191.098199711474 162781.1966770693
 
 
 
+----------------------------
+# the naive init
+
+Number of Iterations....: 427
+
+                                   (scaled)                 (unscaled)
+Objective...............:   3.8060857889034748e+07    3.8060857889034748e+07
+Dual infeasibility......:   4.6324477047035462e+00    4.6324477047035462e+00
+Constraint violation....:   1.7454943740391471e-12    1.7454943740391471e-12
+Complementarity.........:   5.0000000000000008e-11    5.0000000000000008e-11
+Overall NLP error.......:   4.6324477047035462e+00    4.6324477047035462e+00
+
+
+Number of objective function evaluations             = 1650
+Number of objective gradient evaluations             = 412
+Number of equality constraint evaluations            = 1650
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 431
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total CPU secs in IPOPT (w/o function evaluations)   =      1.150
+Total CPU secs in NLP function evaluations           =      6.037
+
+EXIT: Restoration Failed!
+pf range =  20165.35732163739 1191.098199711474 162781.1966770693
 

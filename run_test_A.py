@@ -285,7 +285,8 @@ def run_test(select_idx, naive_init):
 
 
 if __name__ == "__main__":
-    # for idx in range(13):
-    #     run_test(idx, True)
   
-    run_test(12, False)
+    run_test(1, True) # when the second arg is True, the first arg does not matter.
+
+    # this instance has totally 13 cost-unique Pareto-optimal paths.
+    # run_test(12, False) # change idx from 0 to 12
