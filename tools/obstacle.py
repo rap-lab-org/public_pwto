@@ -5,7 +5,7 @@ import time
 
 class ObstSet:
   
-  def __init__(self, obs_pos_array, cov=np.array([[0.001, 0],[0, 0.001]])):
+  def __init__(self, obs_pos_array, cov=np.array([[0.0001, 0],[0, 0.0001]])):
     """
     obs_pos_array should be a numpy 2d array.
     obs_pos_array = [[x1,y1], [x2,y2], ..., [xn,yn]] - positions of obstacles.
