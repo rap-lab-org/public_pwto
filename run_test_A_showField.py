@@ -108,25 +108,12 @@ plt.plot(Sinit[0],Sinit[1],"ro")
 plt.plot(Sgoal[0],Sgoal[1],"r*")
 
 
-plt.show()
-
-### plot pareto paths
-
-paths = res_dict['paths']
-select_path_x = []
-select_path_y = []
-for k in paths:
-    p = paths[k]
-    px = list()
-    py = list()
-    for v in p:
-        py.append( (v%npix)*(1/npix) )
-        px.append( int(np.floor(v/npix))*(1.0/npix) )
-    select_path_x = px
-    select_path_y = py
-    plt.plot(px,py,"g--")
 plt.draw()
 plt.pause(1)
 # print(" select_path_x = ", select_path_x)
 # print(" select_path_y = ", select_path_y)
+
+case_ID = "A"
+plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-instance.png", bbox_inches='tight', dpi=200)
+
 
