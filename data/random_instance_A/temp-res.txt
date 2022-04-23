@@ -1,9 +1,9 @@
-graph_load_time: 0.063333
+graph_load_time: 0.062725
 n_generated: 12227
 n_expanded: 6035
 n_domCheck: 18106
-rt_initHeu: 0.032612
-rt_search: 0.130115
+rt_initHeu: 0.0305269
+rt_search: 0.128565
 N: 1
 Label: 24131
 [154,]
