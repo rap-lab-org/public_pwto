@@ -19,10 +19,15 @@ import obstacle as obs
 
 import emoa_py_api as emoa
 
-from misc import LoadMapDao, findObstacles, path2InitialGuess, linearInitGuess, lexSortResult
+from misc import LoadMapDao, findObstacles, path2InitialGuess, linearInitGuess, lexSortResult, scalarizeSolve
 
 
-def run_test(select_idx, naive_init):
+def run_test(select_idx, mode):
+    """
+    mode = 0, Warm start using Pareto-optimal solutions.
+    mode = 1, naive init guess.
+    mode = 2, scalarized map.
+    """
 
     ############## Global Params Begin ################
     case_ID = "A"
@@ -30,6 +35,7 @@ def run_test(select_idx, naive_init):
     Sgoal = np.array([0.94, 0.8, 0,0, 0])
     num_nodes = 100
     interval_value = 0.1
+    n_weight = 13 # only useful when mode = 2
     # select_idx = 12 # change this to select diff paths.
     # naive_init = False
     w1 = 0.01 # control cost, for the u terms.
@@ -37,7 +43,8 @@ def run_test(select_idx, naive_init):
     w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
     ############## Global Params End ################
 
-    if naive_init:
+    # if naive_init:
+    if mode == 1:
       w3 = 0
 
     duration = (num_nodes-1)*interval_value
@@ -62,11 +69,11 @@ def run_test(select_idx, naive_init):
 
     plt.draw()
     plt.pause(1)
-    plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-pf-k-"+str(select_idx)+".png", bbox_inches='tight', dpi=200)
+    plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-mode-"+str(mode)+"-pf-k-"+str(select_idx)+".png", bbox_inches='tight', dpi=200)
 
     ######### Fig 2.
 
-    if not naive_init:
+    if mode != 1:
         ## convert to a 100x100 grid
         c1 = np.ones([npix,npix]) # distance
         c2 = pf # dist to obstacle
@@ -74,10 +81,12 @@ def run_test(select_idx, naive_init):
         vo = int(Sinit[0]*npix*npix + Sinit[1]*npix)
         vd = int(Sgoal[0]*npix*npix + Sgoal[1]*npix)
 
-        res_dict = emoa.runEMOA([c1,c2], "runtime_data/", "../public_emoa/build/run_emoa", "runtime_data/temp-res.txt", vo, vd, 60)
-
-        lexSortResult(res_dict)
-        print(res_dict['costs'])
+        res_dict = dict()
+        if mode == 0:
+            res_dict = emoa.runEMOA([c1,c2], "runtime_data/", "../public_emoa/build/run_emoa", "runtime_data/temp-res.txt", vo, vd, 60)
+            lexSortResult(res_dict)
+        elif mode == 2:
+            res_dict = scalarizeSolve([c1,c2], n_weight, "runtime_data/", "../public_emoa/build/run_emoa", "runtime_data/temp-res.txt", vo, vd, 60)
 
         fig = plt.figure(figsize=(5,5))
 
@@ -85,7 +94,6 @@ def run_test(select_idx, naive_init):
         yy = np.linspace(0,1,num=100)
         Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
         print("pf range = ", np.mean(pf), np.median(pf), np.max(pf))
-        # plt.contourf(X, Y, -pf, levels=np.linspace(np.min(-pf), np.max(-pf),100), cmap='gray')
         plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),500), cmap='gray_r')
         plt.plot(Sinit[0],Sinit[1],"ro")
         plt.plot(Sgoal[0],Sgoal[1],"r*")
@@ -108,26 +116,24 @@ def run_test(select_idx, naive_init):
             idx += 1
         plt.draw()
         plt.pause(1)
-        # print(" select_path_x = ", select_path_x)
-        # print(" select_path_y = ", select_path_y)
 
     initial_guess = []
-    if naive_init:
+    if mode == 1:
       initial_guess = linearInitGuess(Sinit[0:2], Sgoal[0:2], num_nodes, 5, 2, interval_value)
     else:
       initial_guess = path2InitialGuess(select_path_x, select_path_y, num_nodes, 5, 2, interval_value)
-      plt.plot(initial_guess[:num_nodes],initial_guess[num_nodes:2*num_nodes],"b")
+      if mode == 0:
+        plt.plot(initial_guess[:num_nodes],initial_guess[num_nodes:2*num_nodes],"b")
       plt.draw()
       plt.pause(1)
-      plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-pareto_paths-k-"+str(select_idx)+".png", bbox_inches='tight', dpi=200)
+      plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-mode-"+str(mode)+"-pareto_paths-k-"+str(select_idx)+".png", bbox_inches='tight', dpi=200)
 
 
     ### Fig 2b, Pareto front
 
-    if not naive_init:
+    if mode == 0:
         fig = plt.figure(figsize=(3,3))
 
-        res_dict['costs']
         idx = 0
         for k in res_dict['costs']:
             c = res_dict['costs'][k]
@@ -139,13 +145,15 @@ def run_test(select_idx, naive_init):
         plt.grid()
         plt.draw()
         plt.pause(1)
-        plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-pareto_front-k-"+str(select_idx)+".png", bbox_inches='tight', dpi=200)
+        plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-mode-"+str(mode)+"-pareto_front-k-"+str(select_idx)+".png", bbox_inches='tight', dpi=200)
 
 
     # Symbolic equations of motion
     # I, m, g, d, t = sym.symbols('I, m, g, d, t')
     # theta, omega, T = sym.symbols('theta, omega, T', cls=sym.Function)
 
+    if mode == 2:
+        return
 
     t = sym.symbols('t')
     sx,sy,stheta,sv,sw,ua,uw = sym.symbols('sx, sy, stheta, sv, sw, ua, uw', cls=sym.Function)
@@ -267,15 +275,13 @@ def run_test(select_idx, naive_init):
 
     plt.draw()
     plt.pause(1)
-    if naive_init:
-        plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-traj-naiveInit.png", bbox_inches='tight', dpi=200)
-    else:
-        plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-traj-k-"+str(select_idx)+".png", bbox_inches='tight', dpi=200)
+    # if naive_init:
+    plt.savefig("runtime_data/random-32-32-20-"+str(case_ID)+"-mode-"+str(mode)+"-traj-k-"+str(select_idx)+".png", bbox_inches='tight', dpi=200)
 
     # for k in info:
     #     print(" - ", k, " = ", info[k])
 
-    if not naive_init:
+    if mode == 0:
         print("---------------------SOLUTION RESULT BEGIN------------------------")
         print("[RESULT] EMOA*, search time = ", res_dict['rt_search'])
         print("[RESULT] EMOA*, num solutions = ", res_dict['n_sol'])
@@ -286,7 +292,9 @@ def run_test(select_idx, naive_init):
 
 if __name__ == "__main__":
   
-    run_test(1, True) # when the second arg is True, the first arg does not matter.
+    # run_test(1, 1) # when the second arg is True, the first arg does not matter.
 
     # this instance has totally 13 cost-unique Pareto-optimal paths.
-    # run_test(12, False) # change idx from 0 to 12
+    # run_test(12, 0) # change idx from 0 to 12
+
+    run_test(1, 2) # when the second arg is True, the first arg does not matter.

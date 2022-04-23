@@ -4,6 +4,7 @@ import heapq as hpq
 import numpy as np
 import copy
 
+import emoa_py_api as emoa
 
 def LoadMapDao(map_file):
   grids = np.zeros((2,2))
@@ -166,3 +167,41 @@ def lexSortResult( res_dict ):
   res_dict["paths"] = new_pdict
   res_dict["costs"] = new_cdict
   return 
+
+def normalize(cmat):
+  """
+  """
+  m = np.min(cmat)
+  M = np.max(cmat)
+  if m == M:
+    return cmat
+  res_mat = (cmat-m) / (M-m) * 1000 # equivalent to keep 3 digits float number.
+  return res_mat
+
+def scalarizeSolveEach(c_list, w, folder, emoa_exe, res_file, vo, vd, tlimit):
+  """
+  """
+  scalarized_mat = np.zeros(c_list[0].shape)
+  for i in range(len(c_list)):
+    scalarized_mat += w[i]*normalize(c_list[i])
+  res_dict = emoa.runEMOA([scalarized_mat], folder, emoa_exe, res_file, vo, vd, tlimit)
+  return res_dict
+
+def scalarizeSolve(c_list, n_weight, folder, emoa_exe, res_file, vo, vd, tlimit):
+  """
+  """
+  out_dict = dict()
+  w1_list = np.linspace(0,1,n_weight)
+  out_dict['paths'] = dict()
+  out_dict['costs'] = dict()
+  idx = 0
+  for w1 in w1_list:
+    w2 = 1-w1
+    res = scalarizeSolveEach(c_list, np.array([w1,w2]), folder, emoa_exe, res_file, vo, vd, tlimit)
+    if len(res['paths']) > 1:
+      sys.exit("[ERROR] Scalar map has more than one solution.")
+    for k in res['paths']:
+      out_dict['paths'][idx] = res['paths'][k] # there should be only one solution.
+      # out_dict['costs'][idx] = recoverPathCost(c_list, res['paths'][k]) # there should be only one solution.
+    idx += 1
+  return out_dict
