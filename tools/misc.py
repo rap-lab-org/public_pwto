@@ -205,3 +205,32 @@ def scalarizeSolve(c_list, n_weight, folder, emoa_exe, res_file, vo, vd, tlimit)
       # out_dict['costs'][idx] = recoverPathCost(c_list, res['paths'][k]) # there should be only one solution.
     idx += 1
   return out_dict
+
+def pointHdfMinPart(nxt, v, p):
+  """
+  find the nearest dist between a point and a path.
+  """
+  vx = v%nxt
+  vy = int(v/nxt)
+  pathx = p%nxt
+  pathy = np.floor(p/nxt)
+  d = np.abs(pathx - vx) + np.abs(pathy-vy)
+  return np.min(d)
+
+def pathHdf(nxt,p1,p2):
+  """
+  given two path, return the Hausdorf distance.
+  """
+  dmax1 = 0
+  for v in p1:
+    d = pointHdfMinPart(nxt,v,p2)
+    if d > dmax1:
+      dmax1 = d
+  dmax2 = 0
+  for v in p2:
+    d = pointHdfMinPart(nxt,v,p1)
+    if d > dmax2:
+      dmax2 = d
+  return max(dmax1, dmax2)
+
+
