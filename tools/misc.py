@@ -233,4 +233,21 @@ def pathHdf(nxt,p1,p2):
       dmax2 = d
   return max(dmax1, dmax2)
 
-
+def theta2quat(theta):
+  """
+  return q = [w,x,y,z]
+  """
+  if hasattr(theta, "__len__"):
+    q = np.zeros((len(theta),4))
+    q[:,0] = np.cos(theta/2)
+    q[:,1] = 0
+    q[:,1] = 0
+    q[:,3] = np.sin(theta/2)
+    return q
+  else:
+    q = np.zeros(4)
+    q[0] = np.cos(theta/2)
+    q[1] = 0
+    q[2] = 0
+    q[3] = np.sin(theta/2)
+    return q

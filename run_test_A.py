@@ -40,10 +40,10 @@ def plotInstance():
   interval_value = 0.1
   duration = (num_nodes-1)*interval_value
 
-  obss = obs.ObstSet( obsts )
+  obss = obs.ObstSet( obsts, 0.5/32, 2.0/32, 10 )
   npix = 100
   print("start to compute pf...")
-  pf = obss.potentialField(1,1,npix)*100
+  pf = obss.potentialField(1,1,npix)
   print("pf done...")
 
   ## convert to a 100x100 grid
@@ -55,11 +55,11 @@ def plotInstance():
 
   fig = plt.figure(figsize=(5,5))
 
-  xx = np.linspace(0,1,num=100)
-  yy = np.linspace(0,1,num=100)
+  xx = np.linspace(0,1,num=npix)
+  yy = np.linspace(0,1,num=npix)
   Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
 
-  plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),500), cmap='gray_r')
+  plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
   plt.plot(Sinit[0],Sinit[1],"ro")
   plt.plot(Sgoal[0],Sgoal[1],"r*")
 
@@ -96,9 +96,9 @@ def run_test(select_idx, mode):
     n_weight = 13 # only useful when mode = 2
     folder = "data/random_instance_A/"
     emoa_path = "../public_emoa/build/run_emoa"
-    w1 = 0.01 # control cost, for the u terms.
-    w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
-    w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+    w1 = 0 # control cost, for the u terms.
+    w2 = 1 # obstacle cost, larger = stay more far away from obstacles
+    w3 = 0 # stay close to the initial guess, larger = stay closer to the initial guess.
 
     ##############################################################
     # Compute potential field for obstacles and visualize
@@ -111,17 +111,17 @@ def run_test(select_idx, mode):
     map_grid = LoadMapDao(folder+"random-32-32-20.map")
     obsts_all = findObstacles(map_grid)
     obsts = obsts_all / 32.0
-    obss = obs.ObstSet( obsts )
+    obss = obs.ObstSet( obsts, 0.5/32, 2.0/32, 10 )
     npix = 100
     print("[INFO] start to compute pf...")
-    pf = obss.potentialField(1,1,npix)*100
+    pf = obss.potentialField(1,1,npix)
 
     if mode == 1: # plot just for this mode is enough.
         fig = plt.figure(figsize=(5,5))
-        xx = np.linspace(0,1,num=100)
-        yy = np.linspace(0,1,num=100)
+        xx = np.linspace(0,1,num=npix)
+        yy = np.linspace(0,1,num=npix)
         Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
-        plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),500), cmap='gray_r')
+        plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
         plt.plot(Sinit[0],Sinit[1],"ro")
         plt.plot(Sgoal[0],Sgoal[1],"r*")
 
@@ -150,11 +150,11 @@ def run_test(select_idx, mode):
 
         fig = plt.figure(figsize=(5,5))
 
-        xx = np.linspace(0,1,num=100)
-        yy = np.linspace(0,1,num=100)
+        xx = np.linspace(0,1,num=npix)
+        yy = np.linspace(0,1,num=npix)
         Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
         print("pf range = ", np.mean(pf), np.median(pf), np.max(pf))
-        plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),500), cmap='gray_r')
+        plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
         plt.plot(Sinit[0],Sinit[1],"ro")
         plt.plot(Sgoal[0],Sgoal[1],"r*")
 
@@ -221,8 +221,8 @@ def run_test(select_idx, mode):
     ### Fig 3
 
     fig = plt.figure(figsize=(5,5))
-    xx = np.linspace(0,1,num=100)
-    yy = np.linspace(0,1,num=100)
+    xx = np.linspace(0,1,num=npix)
+    yy = np.linspace(0,1,num=npix)
     Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
     plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),500), cmap='gray_r')
     plt.plot(Sinit[0],Sinit[1],"ro")
@@ -250,6 +250,9 @@ def run_test(select_idx, mode):
         print("---------------------SOLUTION RESULT END------------------------")
 
     plt.close("all")
+
+    print("[RESULT] IPOPT, info = ", info)
+    print("...", info["status"])
 
     return
 
@@ -294,7 +297,7 @@ if __name__ == "__main__":
     plotInstance()
 
     ### Run tests
-    for k in range(4,13): # this instance has totally 13 cost-unique Pareto-optimal paths.
+    for k in range(0,13): # this instance has totally 13 cost-unique Pareto-optimal paths.
         run_test(k, mode=0) # change idx from 0 to 12
 
     run_test(-1, mode=1) 
