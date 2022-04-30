@@ -241,29 +241,46 @@ class ObstSet:
     self.k = k
     return
 
+  def _dist(self,p):
+    diff = self.obs_pos_array - p
+    d = np.hypot(diff[:,0],diff[:,1]) # sqrt(x**2,y**2)
+    # d = np.min(np.array([np.abs(diff[:,0]),np.abs(diff[:,1])]), axis=0)
+    d[d < self.rObst] = self.rObst
+    return d
+
   def pointCost(self, p):
     """
     p=[x,y]
     """
-    cost = 0
-
-    diff = self.obs_pos_array - p
-    dist = np.hypot(diff[:,0],diff[:,1])
-    # dist[dist < self.rObst] = self.rObst
-
-    minDist = dist[dist == np.min(dist)]
-    minDist[minDist < self.rObst] = self.rObst
-
-    # return self.k*np.sum( 1 / minDist[minDist < self.rSafe] )
-
+    dist = self._dist(p)
     min_d = np.min(dist)
-
     if min_d > self.rSafe:
       return 0
+    return 1/2 *self.k*(1.0/min_d - 1.0/self.rSafe)**2
 
-    if min_d < self.rObst:
-      min_d = self.rObst
-    return self.k*(1/min_d)
+  # def pointCost(self, p):
+  #   """
+  #   p=[x,y]
+  #   """
+  #   cost = 0
+
+  #   # diff = self.obs_pos_array - p
+  #   # dist = np.hypot(diff[:,0],diff[:,1])
+  #   # # dist[dist < self.rObst] = self.rObst
+
+
+  #   # minDist = dist[dist == np.min(dist)]
+  #   # minDist[minDist < self.rObst] = self.rObst
+
+  #   # return self.k*np.sum( 1 / minDist[minDist < self.rSafe] )
+
+  #   dist = self._dist(p)
+  #   dist[dist < self.rObst] = self.rObst
+  #   effective_dist = dist[dist < self.rSafe]
+  #   if len(effective_dist) == 0:
+  #     return 0
+  #   return self.k*np.sum(1/effective_dist) / len(effective_dist) # take average
+
 
   def arrayCost(self, pList):
     """
@@ -278,25 +295,37 @@ class ObstSet:
     """
     """
 
-    diff = self.obs_pos_array - p
-    dist = np.hypot(diff[:,0],diff[:,1])
+    # diff = self.obs_pos_array - p
+    # dist = np.hypot(diff[:,0],diff[:,1])
+
+    dist = self._dist(p)
+    dmin = np.min(dist)
 
     # dist[dist < self.rObst] = self.rObst
     # selector = dist < self.rSafe
     # near_dist = dist[selector]
     # near_obs = self.obs_pos_array[selector]
 
-    select1 = (dist == np.min(dist))
-    dist[dist < self.rObst] = self.rObst
-
-    select2 = dist < self.rSafe
+    select1 = (dist == dmin)
+    select2 = (dist < self.rSafe)
     near_dist = dist[select1&select2]
     near_obs = self.obs_pos_array[select1&select2]
 
-    dq = near_obs - p
-    temp = self.k / near_dist
-    grad_array = np.multiply( dq, temp[:,np.newaxis])
-    return np.sum(grad_array, axis=0)
+    if len(near_obs) == 0:
+      return 0
+    elif len(near_obs) == 1:
+      p_ref = near_obs[0]
+      return -self.k*(1.0/dmin - 1.0/self.rSafe) * (1/dmin) * (1/dmin) * (1/dmin) * (p-p_ref)
+    else:
+      grad = np.zeros(2)
+      for p_ref in near_obs:
+        grad += -self.k*(1.0/dmin - 1.0/self.rSafe) * (1/dmin) * (1/dmin) * (1/dmin) * (p-p_ref)
+      return grad
+
+    # dq = near_obs - p
+    # temp = self.k / near_dist
+    # grad_array = np.multiply( dq, temp[:,np.newaxis])
+    # return np.sum(grad_array, axis=0)
 
   def arrayGrad(self, pList):
     """
@@ -328,3 +357,14 @@ class ObstSet:
     print("pf = ", p, "min max = ", np.min(p), np.max(p))
     print("pf = ", p, "min max median = ", np.min(p), np.max(p), np.median(p))
     return p
+
+
+def map1():
+  """
+  10x10
+  """
+  out = np.zeros((10,10))
+  out[0:7,3] = 1
+  out[3:10,5] = 1
+  out[0:7,7] = 1
+  return out

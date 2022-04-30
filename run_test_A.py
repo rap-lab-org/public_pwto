@@ -25,10 +25,13 @@ def plotInstance():
 
   folder = "data/random_instance_A/"
   
-  map_grid = LoadMapDao(folder+"random-32-32-20.map")
+  # map_grid = LoadMapDao(folder+"random-32-32-20.map")
+  # obsts_all = findObstacles(map_grid)
+  # obsts = obsts_all / 32.0
+
+  map_grid = obs.map1()
   obsts_all = findObstacles(map_grid)
-  obsts = obsts_all / 32.0
-  # print(obsts)
+  obsts = obsts_all / map_grid.shape[0]
 
   Sinit = np.array([0.1, 0.1, 0, 0, 0])
   Sgoal = np.array([0.9, 0.8, 0 ,0, 0])
@@ -40,7 +43,7 @@ def plotInstance():
   interval_value = 0.1
   duration = (num_nodes-1)*interval_value
 
-  obss = obs.ObstSet( obsts, 0.5/32, 2.0/32, 10 )
+  obss = obs.ObstSet( obsts, 0.6/10, 1.0/10, 10 )
   npix = 100
   print("start to compute pf...")
   pf = obss.potentialField(1,1,npix)
@@ -96,9 +99,9 @@ def run_test(select_idx, mode):
     n_weight = 13 # only useful when mode = 2
     folder = "data/random_instance_A/"
     emoa_path = "../public_emoa/build/run_emoa"
-    w1 = 0 # control cost, for the u terms.
-    w2 = 1 # obstacle cost, larger = stay more far away from obstacles
-    w3 = 0 # stay close to the initial guess, larger = stay closer to the initial guess.
+    w1 = 1 # control cost, for the u terms.
+    w2 = 100 # obstacle cost, larger = stay more far away from obstacles
+    w3 = 10 # stay close to the initial guess, larger = stay closer to the initial guess.
 
     ##############################################################
     # Compute potential field for obstacles and visualize
@@ -108,10 +111,17 @@ def run_test(select_idx, mode):
       w3 = 0
 
     duration = (num_nodes-1)*interval_value
-    map_grid = LoadMapDao(folder+"random-32-32-20.map")
+
+    # map_grid = LoadMapDao(folder+"random-32-32-20.map")
+    # obsts_all = findObstacles(map_grid)
+    # obsts = obsts_all / 32.0
+    # obss = obs.ObstSet( obsts, 0.5/32, 2.0/32, 10 )
+
+    map_grid = obs.map1()
     obsts_all = findObstacles(map_grid)
-    obsts = obsts_all / 32.0
-    obss = obs.ObstSet( obsts, 0.5/32, 2.0/32, 10 )
+    obsts = obsts_all / map_grid.shape[0]
+    obss = obs.ObstSet( obsts, 0.6/10, 1.0/10, 10 )
+
     npix = 100
     print("[INFO] start to compute pf...")
     pf = obss.potentialField(1,1,npix)

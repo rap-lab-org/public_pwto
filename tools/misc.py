@@ -47,7 +47,7 @@ def findObstacles(grid):
     for ix in range(nyt):
       if grid[iy,ix] == 1:
         out.append(np.array([iy,ix]))
-  return np.array(out)
+  return np.array(out)+0.5
 
 
 def path2InitialGuess(px, py, n_nodes, n, m, interval_value):
