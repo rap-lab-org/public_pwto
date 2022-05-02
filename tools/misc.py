@@ -1,10 +1,21 @@
 
 
+import pickle
 import heapq as hpq
 import numpy as np
 import copy
 
 import emoa_py_api as emoa
+
+def SavePickle(data, file_path):
+  pickle_out = open(file_path,"wb")
+  pickle.dump(data, pickle_out)
+  pickle_out.close()
+  return
+
+def LoadPickle(file_path):
+  pickle_in = open(file_path,"rb")
+  return pickle.load(pickle_in)
 
 def LoadMapDao(map_file):
   grids = np.zeros((2,2))

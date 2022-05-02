@@ -4,6 +4,7 @@ Pareto Warm-start Direct Collocation (PWDC)
 
 import copy
 import numpy as np
+import matplotlib.pyplot as plt
 
 import context
 import misc
@@ -20,13 +21,14 @@ class TrajStruct:
   """
   def __init__(self):
     self.id = 0
-    self.Z = []
+    self.Z = [] # solution, X and U.
     self.J = -1 # overall cost
     self.l = 0 # length of traj
     self.epiCount = 0 # total number of episode
     self.epiIdxCvg = 0 # The index of the episode where the optimization converges.
     self.X = []
     self.U = []
+    self.init_path = [] # the path that warm-start this trajectory.
     self.isConverged = False # whether optimization already converges.
 
   def parseZ(self, n, m):
@@ -47,8 +49,10 @@ class TrajStruct:
     """
     return self.Z[self.l:2*self.l]
 
-
 class PWDC():
+  """
+  Pareto Warm-start Direct Collocation.
+  """
   def __init__(self, configs):
     """
     """
@@ -61,15 +65,27 @@ class PWDC():
     self.sol = dict()
     return
 
+  def costJ(self, Z, l):
+    """Minimize the sum of the squares of the control torque."""
+    X,U,_ = opty.utils.parse_free(Z, self.cfg["n"], self.cfg["m"], l)
+    xy_tj = X[0:2,:].T
+    J1 = self.cfg["optm_weights"][0]*np.sum(U**2)
+    J2 = self.cfg["optm_weights"][1]*self.obss.arrayCost(xy_tj)
+    # there is no cost term for staying close to the path.
+    return J1 + J2
+
   def _init(self):
     """
     """
-    
     ## load map and generate obstacle_set.
-    self.map_grid = misc.LoadMapDao(self.cfg["map_grid_path"] )
+    if "map_grid_path" in self.cfg:
+      self.map_grid = misc.LoadMapDao(self.cfg["map_grid_path"] )
+    else:
+      self.map_grid = self.cfg["map_grid"]
+    grid_size,_ = self.map_grid.shape
     obsts_all = misc.findObstacles(self.map_grid)
-    obsts = obsts_all / 32.0 # scale coordinates into [0,1]x[0,1]
-    self.obss = obs.ObstSet( obsts )
+    obsts = obsts_all / grid_size # scale coordinates into [0,1]x[0,1]
+    self.obss = obs.ObstSet( obsts, self.cfg["obst_cov_val"] )
     self.obs_pf = self.obss.potentialField(1,1,self.cfg["npix"])*100
     return
     
@@ -77,9 +93,7 @@ class PWDC():
     """
     """
 
-    ## generate cost, 2-d now.
-    ## TODO, we can consider more relevant objectives actually.
-
+    ## generate cost, 2-d now. TODO, more costs ?
     npix = self.cfg["npix"]
     Sinit = self.cfg["Sinit"]
     Sgoal = self.cfg["Sgoal"]
@@ -176,15 +190,16 @@ class PWDC():
     for k in picked_dict:
       tjObj = TrajStruct()
       tjObj.id = k
+      tjObj.init_path = picked_dict[k]
       tjObj.Z = self._getInitGuess(k)
       tjObj.l = len(picked_dict[k])
       Zsol, info = optm_ddc2.dirCol_ddc2(\
         tjObj.Z, self.cfg["Sinit"], self.cfg["Sgoal"], \
         self.cfg["optm_weights"] , self.obss, tjObj.l, \
         self.cfg["interval_value"], max_iter=1) # just one iter, to init.
-      tjObj.J = info['obj_val']
+      # tjObj.J = info['obj_val']
+      tjObj.J = self.costJ(tjObj.Z, tjObj.l)
       self.tjObjDict[k] = tjObj
-      # self.open.add(tjObj.J, tjObj)
     # end for
     return
 
@@ -197,31 +212,18 @@ class PWDC():
         self.cfg["interval_value"], max_iter=self.cfg['iters_per_episode'])
     tjObj.epiCount += 1 # total number of episode
     tjObj.Z = Z
-    tjObj.J = info['obj_val']
+    # tjObj.J = info['obj_val']
+    tjObj.J = self.costJ(tjObj.Z, tjObj.l)
     if info["status"] == -1:
       tjObj.isConverged = False
       # self.open.add(tjObj.J, tjObj)
     else:
-      print("tjObj.id = ", tjObj.id, " converges")
+      print("tjObj.id = ", tjObj.id, " converges, epiIdx = ", epiIdx)
       tjObj.isConverged = True
-      self.epiIdxCvg = epiIdx
+      tjObj.epiIdxCvg = epiIdx
       self.sol[tjObj.id] = tjObj
       # self.tjObjDict.pop(tjObj.id) # remove it from candidates.
     return tjObj.isConverged
-
-  # def compute(self,):
-  #   """
-  #   """
-  #   self._init()
-  #   self._graphSearch()
-  #   self._initOpen()
-  #   episodeK = 1
-  #   while not self._ifTerminate():
-  #     _, tjObj = self.open.pop()
-  #     self._optmEpisode(tjObj, episodeK)
-  #     episodeK += 1
-  #   # end while
-  #   return
 
   def Solve(self):
     """
@@ -244,3 +246,25 @@ class PWDC():
       for k in tbd:
         self.tjObjDict.pop(k)
     return self.sol
+
+def plotTraj(pf, configs, p, tj, save_path, fig_sz):
+  """
+  """
+  fig = plt.figure(figsize=(fig_sz,fig_sz))
+  s = configs["Sinit"]
+  d = configs["Sgoal"]
+  xx = np.linspace(0,1,num=configs["npix"])
+  yy = np.linspace(0,1,num=configs["npix"])
+  Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
+  plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
+  plt.plot(s[0],s[1],"ro")
+  plt.plot(d[0],d[1],"r*")
+  plt.plot(p[0,:], p[1,:], "b--")
+  plt.plot(tj[0,:], tj[1,:], "r.", markersize=1)
+  plt.xticks([0,1])
+  plt.yticks([0,1])
+  plt.draw()
+  plt.pause(1)
+  plt.savefig(save_path, bbox_inches='tight', dpi=200)
+
+
