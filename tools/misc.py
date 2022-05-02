@@ -223,6 +223,7 @@ def pointHdfMinPart(nxt, v, p):
   """
   vx = v%nxt
   vy = int(v/nxt)
+  # print(" v = ", v, " vx = ", vx, "vy = ", vy, " nxt = ", nxt)
   pathx = p%nxt
   pathy = np.floor(p/nxt)
   d = np.abs(pathx - vx) + np.abs(pathy-vy)
@@ -230,18 +231,21 @@ def pointHdfMinPart(nxt, v, p):
 
 def pathHdf(nxt,p1,p2):
   """
-  given two path, return the Hausdorf distance.
+  given two paths, return the Hausdorf distance.
   """
   dmax1 = 0
   for v in p1:
     d = pointHdfMinPart(nxt,v,p2)
+    # print(" dmin1 = ", d)
     if d > dmax1:
       dmax1 = d
   dmax2 = 0
   for v in p2:
     d = pointHdfMinPart(nxt,v,p1)
+    # print(" dmin2 = ", d)
     if d > dmax2:
       dmax2 = d
+  # print(" dmax = ", dmax1, dmax2)
   return max(dmax1, dmax2)
 
 def theta2quat(theta):

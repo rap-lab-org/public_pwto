@@ -7,15 +7,23 @@ import context
 import pwdc
 import misc
 
+folder = "data/test_small_1/"
+
 def getConfig():
+ 
+  np.random.seed(0)
+  map_grid = np.random.rand(16,16)
+  obst_thres = 0.75
+  map_grid[map_grid < obst_thres] = 0
+  map_grid[map_grid >= obst_thres] = 1
 
   configs = dict()
-  configs["folder"] = "data/random_instance_A/"
-  configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+  configs["folder"] = folder
+  configs["map_grid"] = map_grid
   configs["n"] = 5
   configs["m"] = 2
-  configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
-  configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+  configs["Sinit"] = np.array([0.5, 0.05, 0, 0, 0])
+  configs["Sgoal"] = np.array([0.1, 0.8, 0 ,0, 0])
   configs["interval_value"] = 0.1
   configs["npix"] = 100
   configs["emoa_path"] = "../public_emoa/build/run_emoa"
@@ -26,7 +34,7 @@ def getConfig():
     # w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
   configs["total_epi"] = 10
   configs["hausdorf_filter_thres"] = 10
-  configs["obst_cov_val"] = 2*1e-4
+  configs["obst_cov_val"] = 6*1e-4
   return configs
 
 def test_pwdc():
@@ -36,7 +44,6 @@ def test_pwdc():
   solver = pwdc.PWDC(configs)
   solver.Solve()
   print("PWDC get", len(solver.sol), " solutions.")
-  folder = "data/test1/"
   misc.SavePickle(solver, folder+"result.pickle")
   return
 
@@ -59,5 +66,5 @@ def test_pwdc_plot():
   return
 
 if __name__ == "__main__":
-  # test_pwdc()
+  test_pwdc()
   test_pwdc_plot()

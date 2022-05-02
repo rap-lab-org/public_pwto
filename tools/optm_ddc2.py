@@ -137,7 +137,7 @@ def dirCol_ddc2(initial_guess, Sinit, Sgoal, w, obss, num_nodes, interval_value,
 
   prob = Problem(obj, obj_grad, eom, state_symbols, num_nodes, interval_value,
                  instance_constraints=instance_constraints,
-                 bounds={sx(t): (0,1), sy(t): (0,1), ua(t): (-1, 1), uw(t): (-5, 5), sv(t): (0, 0.2), sw(t): (-5, 5)})
+                 bounds={sx(t): (0,1), sy(t): (0,1), sv(t): (0, 0.2), sw(t): (-5, 5), ua(t): (-1, 1), uw(t): (-5, 5)})
 
   prob.addOption("max_iter",max_iter)
 

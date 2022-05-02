@@ -178,7 +178,7 @@ class PWDC():
     for k in temp_copy:
       filtered = False
       for k2 in picked_dict:
-        hd = misc.pathHdf(nxt, np.array(picked_dict[k2]), np.array(temp_copy[k]))
+        hd = misc.pathHdf(self.cfg["npix"], np.array(picked_dict[k2]), np.array(temp_copy[k]))
         if hd < self.cfg["hausdorf_filter_thres"]:
           filtered = True
           break
@@ -260,7 +260,7 @@ def plotTraj(pf, configs, p, tj, save_path, fig_sz):
   plt.plot(s[0],s[1],"ro")
   plt.plot(d[0],d[1],"r*")
   plt.plot(p[0,:], p[1,:], "b--")
-  plt.plot(tj[0,:], tj[1,:], "r.", markersize=1)
+  plt.plot(tj[0,:], tj[1,:], "r.", markersize=1.5)
   plt.xticks([0,1])
   plt.yticks([0,1])
   plt.draw()
