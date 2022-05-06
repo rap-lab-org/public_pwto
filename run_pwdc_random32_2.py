@@ -103,7 +103,6 @@ def plot_compare_iters():
   plt.savefig(folder+"iter_compare.png", bbox_inches='tight', dpi=200)
   return
 
-
 def plot_pareto_front():
 
   solver = misc.LoadPickle(folder+"result.pickle")
@@ -111,12 +110,18 @@ def plot_pareto_front():
   # print(res)
   plt.figure(figsize=(3,3))
   cost_array = np.array( list(res['costs'].values()) )
+  
+  print("total EMOA* #sol = ", len(cost_array))
   for k in res["costs"]:
     c = res['costs'][k]
     plt.plot(c[0],c[1]/np.min(cost_array),"g.", alpha=0.5)
+
+  print("total PWDC converged #sol = ", len(solver.sol))
   for k in solver.sol:
     c = res['costs'][k]
     plt.plot(c[0],c[1]/np.min(cost_array),"ro", alpha=0.6)
+  
+  print("total PWDC un-converged #sol = ", len(solver.tjObjDict))
   for k in solver.tjObjDict:
     c = res['costs'][k]
     plt.plot(c[0],c[1]/np.min(cost_array),"bo", alpha=0.6)
@@ -125,7 +130,7 @@ def plot_pareto_front():
   plt.pause(2)
   plt.savefig(folder+"pareto_front.png", bbox_inches='tight', dpi=200)
   return
-
+  
 def plot_pareto_paths():
   """
   """
@@ -182,15 +187,15 @@ def plot_pareto_paths():
 
 
 if __name__ == "__main__":
-  
+
   # test_pwdc()
 
   # test_pwdc_plot()
 
   # test_and_plot_naive_init()
 
-  plot_compare_iters()
+  # plot_compare_iters()
 
   plot_pareto_front()
 
-  plot_pareto_paths()
+  # plot_pareto_paths()
