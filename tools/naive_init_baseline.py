@@ -21,10 +21,10 @@ def costJ(obss, Z, l, w1, w2, n, m):
   # there is no cost term for staying close to the path.
   return J1 + J2
 
-def run_naive_init(folder, configs, num_nodes, save_path, max_iter):
+def run_naive_init(configs, num_nodes, save_path, max_iter):
 
   ### generate map and potential field
-  map_grid = misc.LoadMapDao(folder+"random-32-32-20.map")
+  map_grid = misc.LoadMapDao(configs["map_grid_path"])
   obsts_all = misc.findObstacles(map_grid)
   grid_size,_ = map_grid.shape
   obsts = obsts_all / grid_size
@@ -37,6 +37,8 @@ def run_naive_init(folder, configs, num_nodes, save_path, max_iter):
   initial_guess = misc.linearInitGuess(configs["Sinit"][0:2], configs["Sgoal"][0:2], \
     num_nodes, n, m, configs["interval_value"])
   
+  print('initial_guess',initial_guess)
+
   configs["optm_weights"][2] = 0 # no need to stay close to the initial guess.
   Zsol, info = optm_ddc2.dirCol_ddc2(\
     initial_guess, configs["Sinit"], configs["Sgoal"], \
@@ -88,6 +90,6 @@ def run_naive_init(folder, configs, num_nodes, save_path, max_iter):
   res_dict["rdm_sol_cost"] = J2
   res_dict["max_iter"] = max_iter
   res_dict["pf"] = pf
-  misc.SavePickle(res_dict, folder+"naive_res.pickle")
+  misc.SavePickle(res_dict, configs["folder"]+"naive_res.pickle")
 
   return

@@ -49,6 +49,36 @@ class TrajStruct:
     """
     return self.Z[self.l:2*self.l]
 
+  def getPosTheta(self):
+    """
+    l is the number of nodes
+    """
+    return self.Z[2*self.l:3*self.l]
+
+  def getVelLinear(self):
+    """
+    l is the number of nodes
+    """
+    return self.Z[3*self.l:4*self.l]
+  def getVelRot(self):
+    """
+    l is the number of nodes
+    """
+    return self.Z[4*self.l:5*self.l]
+
+  def getAccVel(self):
+    """
+    l is the number of nodes
+    """
+    return self.Z[5*self.l:6*self.l]
+
+  def getAccRot(self):
+    """
+    l is the number of nodes
+    """
+    return self.Z[6*self.l:7*self.l]
+
+
 class PWDC():
   """
   Pareto Warm-start Direct Collocation.
@@ -79,7 +109,11 @@ class PWDC():
     """
     ## load map and generate obstacle_set.
     if "map_grid_path" in self.cfg:
-      self.map_grid = misc.LoadMapDao(self.cfg["map_grid_path"] )
+      if "downsample" in self.cfg:
+        self.map_grid = misc.LoadMapDaoDownSample(self.cfg["map_grid_path"], self.cfg["downsample"])
+      else:
+        self.map_grid = misc.LoadMapDao(self.cfg["map_grid_path"] )
+      
     else:
       self.map_grid = self.cfg["map_grid"]
     grid_size,_ = self.map_grid.shape
@@ -263,8 +297,7 @@ def plotTraj(pf, configs, p, tj, save_path, fig_sz):
   plt.plot(tj[0,:], tj[1,:], "r.", markersize=1.5)
   plt.xticks([0,1])
   plt.yticks([0,1])
+  plt.axis('off')
   plt.draw()
   plt.pause(1)
-  plt.savefig(save_path, bbox_inches='tight', dpi=200)
-
-
+  plt.savefig(save_path, bbox_inches='tight', pad_inches = 0, dpi=200)

@@ -49,6 +49,37 @@ def LoadMapDao(map_file):
       lidx = lidx + 1
   return grids
 
+def LoadMapDaoDownSample(map_file, downsample=1):
+  grids = np.zeros((2,2))
+  with open(map_file,'r') as f:
+    lines = f.readlines()
+
+    lidx = 0
+    nx = 0
+    ny = 0
+    
+    a = lines[1].split(" ")
+    nx = int(int(a[1])/downsample)
+    b = lines[2].split(" ")
+    ny = int(int(b[1])/downsample)
+    
+    grids = np.zeros((nx,ny))
+
+    for lidx in range(nx):
+        x = int(lidx)*downsample + 4
+        linedata = lines[x].split("\n")
+        linedata = str(linedata[0])
+        # print(linedata)
+        for cidy in range(ny):
+          y = int(cidy)*downsample
+          ia = linedata[y]
+          if ia == "." or ia == "G":
+            grids[lidx,cidy] = 0
+          else:
+            grids[lidx,cidy] = 1
+  return grids
+
+
 def findObstacles(grid):
   """
   """

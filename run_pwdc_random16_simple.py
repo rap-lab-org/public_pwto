@@ -12,16 +12,14 @@ import misc
 import optm_ddc2
 import obstacle as obs
 import naive_init_baseline as naive
-import kAstar_init_baseline as kAstar
 
-
-folder = "data/test_kAstar_random32_1/"
+folder = "data/test_random16_simple/"
 
 def getConfig():
 
   configs = dict()
   configs["folder"] = folder
-  configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+  configs["map_grid_path"] = configs["folder"] + "random-16-16-simple.map"
   configs["n"] = 5
   configs["m"] = 2
   configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
@@ -37,7 +35,7 @@ def getConfig():
   configs["total_epi"] = 10
   configs["hausdorf_filter_thres"] = 8
   # configs["obst_cov_val"] = 2*1e-4
-  configs["obst_cov_val"] = 2*1e-4
+  configs["obst_cov_val"] = 7*1e-4
   return configs
 
 def test_pwdc():
@@ -91,16 +89,10 @@ def test_and_plot_naive_init():
   num_nodes = 170
   save_path = configs["folder"] + "naiveTraj.png"
   max_iter = 1000
-  # naive.run_naive_init(folder, configs, num_nodes, save_path, max_iter)
   naive.run_naive_init(configs, num_nodes, save_path, max_iter)
 
   # linear init guess, Jcost =  16581811.360421443
   # random init guess, Jcost =  25993129.972545788
-
-def test_and_plot_kAstat_init():
-  configs = getConfig()
-
-
 
 def plot_compare_iters():
   solver = misc.LoadPickle(folder+"result.pickle")
@@ -214,14 +206,14 @@ def plot_pareto_paths():
 
 if __name__ == "__main__":
 
-  # test_pwdc()
+  test_pwdc()
 
-  # test_pwdc_plot()
+  test_pwdc_plot()
 
   test_and_plot_naive_init()
 
-  # plot_compare_iters()
+  plot_compare_iters()
 
-  # plot_pareto_front()
+  plot_pareto_front()
 
-  # plot_pareto_paths()
+  plot_pareto_paths()

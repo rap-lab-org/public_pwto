@@ -2,6 +2,7 @@
 import numpy as np
 from scipy.stats import multivariate_normal
 import time
+import random
 
 FIX_COV_VAL = 2*1e-4
 
@@ -15,9 +16,41 @@ class ObstSet:
     self.cov = np.array([[fix_cov_val,0],[0,fix_cov_val]])
     self.mus = obs_pos_array
     self.mvn_list = list()
+    self.rand_normheight = []
+    self.flat_offset = 0
+
+    random.seed(1)
     for k in range(len(obs_pos_array)):
-      self.mvn_list.append( multivariate_normal(obs_pos_array[k],self.cov) )
+
+      self.rand_normheight.append(random.random())
+
+      # # up and down
+      # self.rand_normheight.append(random.choice((-1, 1))*random.random())
+
+
+    for k in range(len(obs_pos_array)):
+
+      self.mvn_list.append( multivariate_normal(obs_pos_array[k],self.cov) )  
+
+      # random cov, basic cov 7*1e-4 for 16*16
+      # rand_cov_co = 1.0 *(self.rand_normheight[k] - 0.5) +1
+      # self.mvn_list.append( multivariate_normal(obs_pos_array[k],rand_cov_co*self.cov) )
+
     return
+
+
+  def pointCostSingle(self,k,p):
+    """
+    Random normal height
+    p=[x,y]
+    """
+    cost_single = self.mvn_list[k].pdf(p) + self.flat_offset
+
+    # # random height magnitude
+    # cost_single = self.rand_normheight[k] * self.mvn_list[k].pdf(p)
+
+    return cost_single
+
 
   def pointCost(self, p):
     """
@@ -26,8 +59,9 @@ class ObstSet:
     cost = 0
 
     for k in range(len(self.mvn_list)):
-      cost += self.mvn_list[k].pdf(p)
+      cost += self.pointCostSingle(k, p)
     return cost
+
 
   def arrayCost(self, pList):
     """
@@ -35,7 +69,14 @@ class ObstSet:
     """
     cost = 0
     for k in range(len(self.mvn_list)):
-      cost += np.sum( self.mvn_list[k].pdf(pList) )
+
+      cost += np.sum( self.mvn_list[k].pdf(pList) + self.flat_offset)  # original 
+
+      # cost_single = 0
+      # for p in pList:
+      #   cost_single += self.pointCostSingle(k, p)  
+      # cost += cost_single                         # new
+
     return cost
 
   def pointGrad(self, p):
@@ -44,6 +85,8 @@ class ObstSet:
     grad = 0
     for k in range(len(self.mvn_list)):
       grad -= self.mvn_list[k].pdf(p) * np.dot(self.cov, (p-self.mus[k]))
+      grad -= self.pointCostSingle(k, p) * np.dot(self.cov, (p-self.mus[k]))
+
     return grad
 
   def arrayGrad(self, pList):
@@ -52,12 +95,19 @@ class ObstSet:
     grad = np.zeros(pList.shape)
     for k in range(len(self.mvn_list)):
       a = np.dot((pList-self.mus[k]), self.cov)
-      b = self.mvn_list[k].pdf(pList)
+
+      b = self.mvn_list[k].pdf(pList) + self.flat_offset  # original 
+      # b = []
+      # for p in pList:
+      #   b.append(self.pointCostSingle(k, p))  # new
+
       grad -= np.reshape(b, [len(b),1]) * a
+
     # for k in range(len(self.mvn_list)):
     #   for idx in range(len(pList)):
     #     grad[idx,:] += self.pointGrad(pList[idx])
     return grad
+
 
   def potentialField(self, xmax, ymax, npix):
     """
@@ -75,11 +125,14 @@ class ObstSet:
         x = ix*(xmax/npix)
         y = iy*(ymax/npix)
         p[ix,iy] += self.pointCost(np.array([x,y]))
+
       # print(" mu = ", self.mus[k])
       # p += multivariate_normal.pdf(flatgrid, mean=self.mus[k], cov=self.cov).reshape((npix, npix))
     # return p / np.sum(p)
     # print(p)
     return p
+
+
 
 if __name__ == "__main__":
 
