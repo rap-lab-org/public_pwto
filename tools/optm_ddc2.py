@@ -67,7 +67,7 @@ import obstacle as obs
 #   	               [0,dt]])
 
 
-def dirCol_ddc2(initial_guess, Sinit, Sgoal, w, obss, num_nodes, interval_value, max_iter):
+def dirCol_ddc2(initial_guess, Sinit, Sgoal, w, obss, num_nodes, interval_value, vu_bounds,max_iter):
   """
   obss = ObstacleSet object.
   """
@@ -139,9 +139,15 @@ def dirCol_ddc2(initial_guess, Sinit, Sgoal, w, obss, num_nodes, interval_value,
   #                instance_constraints=instance_constraints,
   #                bounds={sx(t): (0,1), sy(t): (0,1), sv(t): (0, 0.2), sw(t): (-5, 5), ua(t): (-1, 1), uw(t): (-5, 5)})
 
+
+  v_up = vu_bounds[0]
+  w_up = vu_bounds[1]
+  ua_up = vu_bounds[2]
+  uw_up = vu_bounds[3]
+
   prob = Problem(obj, obj_grad, eom, state_symbols, num_nodes, interval_value,
                  instance_constraints=instance_constraints,
-                 bounds={sx(t): (0,1), sy(t): (0,1), sv(t): (0, 0.05), sw(t): (-5, 5), ua(t): (-0.3, 0.3), uw(t): (-0.8, 0.8)})
+                 bounds={sx(t): (0,1), sy(t): (0,1), sv(t): (0, v_up), sw(t): (-w_up, w_up), ua(t): (-ua_up, ua_up), uw(t): (-uw_up, uw_up)})
 
   prob.addOption("max_iter",max_iter)
 

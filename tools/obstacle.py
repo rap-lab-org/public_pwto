@@ -32,7 +32,7 @@ class ObstSet:
 
       self.mvn_list.append( multivariate_normal(obs_pos_array[k],self.cov) )  
 
-      # random cov, basic cov 7*1e-4 for 16*16
+      # # random cov, basic cov 7*1e-4 for 16*16
       # rand_cov_co = 1.0 *(self.rand_normheight[k] - 0.5) +1
       # self.mvn_list.append( multivariate_normal(obs_pos_array[k],rand_cov_co*self.cov) )
 
@@ -46,8 +46,8 @@ class ObstSet:
     """
     cost_single = self.mvn_list[k].pdf(p) + self.flat_offset
 
-    # # random height magnitude
-    # cost_single = self.rand_normheight[k] * self.mvn_list[k].pdf(p)
+    # random height magnitude
+    # cost_single = self.rand_normheight[k] * self.mvn_list[k].pdf(p) + self.flat_offset
 
     return cost_single
 
@@ -96,7 +96,7 @@ class ObstSet:
     for k in range(len(self.mvn_list)):
       a = np.dot((pList-self.mus[k]), self.cov)
 
-      b = self.mvn_list[k].pdf(pList) + self.flat_offset  # original 
+      b = self.mvn_list[k].pdf(pList)  # original 
       # b = []
       # for p in pList:
       #   b.append(self.pointCostSingle(k, p))  # new

@@ -29,7 +29,7 @@ def run_naive_init(configs, num_nodes, save_path, max_iter):
   grid_size,_ = map_grid.shape
   obsts = obsts_all / grid_size
   obss = obs.ObstSet( obsts )
-  pf = obss.potentialField(1,1,configs["npix"])
+  pf = obss.potentialField(1,1,configs["npix"])*100
   
   n = configs["n"]
   m = configs["m"]
@@ -43,7 +43,7 @@ def run_naive_init(configs, num_nodes, save_path, max_iter):
   Zsol, info = optm_ddc2.dirCol_ddc2(\
     initial_guess, configs["Sinit"], configs["Sgoal"], \
     configs["optm_weights"], obss, num_nodes, \
-    configs["interval_value"], max_iter)
+    configs["interval_value"], configs["vu_bounds"], max_iter)
 
   Xsol, Usol, _ = opty.utils.parse_free(Zsol, n, m, num_nodes)
 
@@ -56,7 +56,7 @@ def run_naive_init(configs, num_nodes, save_path, max_iter):
   xx = np.linspace(0,1,num=configs["npix"])
   yy = np.linspace(0,1,num=configs["npix"])
   Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
-  plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),500), cmap='gray_r')
+  plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
   plt.plot(configs["Sinit"][0],configs["Sinit"][1],"ro")
   plt.plot(configs["Sgoal"][0],configs["Sgoal"][1],"r*")
   plt.plot(Xsol[0,:],Xsol[1,:],"r.", markersize=2)
@@ -67,7 +67,7 @@ def run_naive_init(configs, num_nodes, save_path, max_iter):
   Zsol2, info = optm_ddc2.dirCol_ddc2(\
     initial_guess, configs["Sinit"], configs["Sgoal"], \
     configs["optm_weights"], obss, num_nodes, \
-    configs["interval_value"], max_iter)
+    configs["interval_value"], configs["vu_bounds"], max_iter)
   Xsol2, Usol2, _ = opty.utils.parse_free(Zsol2, n, m, num_nodes)
   plt.plot(Xsol2[0,:],Xsol2[1,:],"y.", markersize=2)
 

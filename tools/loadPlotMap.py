@@ -108,7 +108,7 @@ class loadPlotMap():
     fig_sz = self.fig_sz
     configs = self.cfg
     save_path = configs["map_grid_path"]
-    save_path = save_path.replace(".map","_terrain_map.png")
+    save_path = save_path.replace(".map","_terrain_map_updown.png")
 
     fig = plt.figure(figsize=(fig_sz,fig_sz))
     s = configs["Sinit"]
@@ -128,7 +128,7 @@ class loadPlotMap():
 if __name__ == '__main__':
 
 
-  folder = "data/test_result/"
+  folder = "data/plot_map/"
 
   configs = dict()
   configs["folder"] = folder
@@ -141,7 +141,7 @@ if __name__ == '__main__':
   configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
   configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
   configs["interval_value"] = 0.2
-  configs["npix"] = 100
+  configs["npix"] = 128
   # configs["emoa_path"] = "../public_emoa/build/run_emoa"
   # configs["iters_per_episode"] = 100
   # configs["optm_weights"] = [0.01, 5000, 200]
@@ -150,7 +150,7 @@ if __name__ == '__main__':
   #   # w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
   # configs["total_epi"] = 10
   # configs["hausdorf_filter_thres"] = 8
-  configs["obst_cov_val"] = 7*1e-4
+  configs["obst_cov_val"] = 0.5*1e-4
   configs["downsample"] = 4
 
 

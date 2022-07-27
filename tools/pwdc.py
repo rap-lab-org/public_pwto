@@ -135,8 +135,11 @@ class PWDC():
     c2 = self.obs_pf # dist to obstacle
 
     ## start and goal node.
-    vo = int(Sinit[0]*npix*npix + Sinit[1]*npix)
-    vd = int(Sgoal[0]*npix*npix + Sgoal[1]*npix)
+    # vo = int(Sinit[0]*npix*npix + Sinit[1]*npix)
+    # vd = int(Sgoal[0]*npix*npix + Sgoal[1]*npix)
+    vo = int(int(Sinit[0]*npix)*npix + int(Sinit[1]*npix))
+    vd = int(int(Sgoal[0]*npix)*npix + int(Sgoal[1]*npix))
+
 
     ## run EMOA*
     self.emoa_res_dict = dict()
@@ -156,6 +159,7 @@ class PWDC():
       py.append( (v%npix)*(1/npix) )
       px.append( int(np.floor(v/npix))*(1.0/npix) )
     return px,py
+    # not right?
 
   def _getInitGuess(self, k):
     """
@@ -230,7 +234,7 @@ class PWDC():
       Zsol, info = optm_ddc2.dirCol_ddc2(\
         tjObj.Z, self.cfg["Sinit"], self.cfg["Sgoal"], \
         self.cfg["optm_weights"] , self.obss, tjObj.l, \
-        self.cfg["interval_value"], max_iter=1) # just one iter, to init.
+        self.cfg["interval_value"], self.cfg["vu_bounds"], max_iter=1) # just one iter, to init.
       # tjObj.J = info['obj_val']
       tjObj.J = self.costJ(tjObj.Z, tjObj.l)
       self.tjObjDict[k] = tjObj
@@ -243,7 +247,8 @@ class PWDC():
     Z, info = optm_ddc2.dirCol_ddc2(\
         tjObj.Z, self.cfg["Sinit"], self.cfg["Sgoal"], \
         self.cfg["optm_weights"] , self.obss, tjObj.l, \
-        self.cfg["interval_value"], max_iter=self.cfg['iters_per_episode'])
+        self.cfg["interval_value"], self.cfg["vu_bounds"], max_iter=self.cfg['iters_per_episode'])
+
     tjObj.epiCount += 1 # total number of episode
     tjObj.Z = Z
     # tjObj.J = info['obj_val']
@@ -297,7 +302,7 @@ def plotTraj(pf, configs, p, tj, save_path, fig_sz):
   plt.plot(tj[0,:], tj[1,:], "r.", markersize=1.5)
   plt.xticks([0,1])
   plt.yticks([0,1])
-  plt.axis('off')
+  # plt.axis('off')
   plt.draw()
   plt.pause(1)
   plt.savefig(save_path, bbox_inches='tight', pad_inches = 0, dpi=200)
