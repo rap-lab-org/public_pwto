@@ -13,21 +13,24 @@ import optm_ddc2
 import obstacle as obs
 import naive_init_baseline as naive
 import kAstar_init_baseline as kAstar
+import scaleAstar_init_baseline as scaleAstar
+
+
 import getConfig
 
 
 
-mapname = 'random32_1'
+# mapname = 'random32_1'
 # mapname = 'random16_1'
-# mapname = 'random16_simple'
+mapname = 'random16_simple'
 # mapname = 'paris_64'
 ConfigClass = getConfig.Config(mapname)
+configs = ConfigClass.configs
 
 
 def test_pwdc():
   """
   """
-  configs = ConfigClass.configs
   solver = pwdc.PWDC(configs)
   solver.Solve()
   print("PWDC get", len(solver.sol), " solutions.")
@@ -71,7 +74,6 @@ def test_pwdc_plot():
   return
 
 def test_and_plot_naive_init():
-  configs = ConfigClass.configs
   # num_nodes = 170
   num_nodes = 220
   save_path = configs["folder"] + "naiveTraj.png"
@@ -83,27 +85,49 @@ def test_and_plot_naive_init():
   # random init guess, Jcost =  25993129.972545788
 
 
-def test_and_plot_kAstat_init():
-  configs = ConfigClass.configs
+# def test_and_plot_kAstat_init():
+#   configs = ConfigClass.configs
 
 
-  astarSol = kAstar.AStar(configs)
-  astarSol.SolvekAstar()
-  misc.SavePickle(astarSol, configs["folder"]+"kAstar_res.pickle")
+#   astarSol = kAstar.AStar(configs)
+#   astarSol.SolvekAstar()
+#   misc.SavePickle(astarSol, configs["folder"]+"kAstar_res.pickle")
+#   configs = astarSol.cfg
+#   fig_sz,_ = astarSol.map_grid.shape
+#   fig_sz = 4
+#   kAstar_res = astarSol.sol
+#   print(" get ", len(astarSol.kAstar_pathlist), " A-STAR paths" )
+
+
+#   for k in kAstar_res:
+
+#     px,py,_ = astarSol._path2xy(kAstar_res[k].init_path)
+#     kAstar.plotTraj(astarSol.obs_pf, configs, \
+#                   np.array([px,py]), np.array([kAstar_res[k].getPosX(),kAstar_res[k].getPosY()]), \
+#                   configs["folder"]+"kAstar_raj_"+str(k)+".png", fig_sz)
+#     print("k = ", k, "converge episode = ", kAstar_res[k].epiIdxCvg, " costJ = ", kAstar_res[k].J, " traj L = ", kAstar_res[k].l)
+
+
+def test_and_plot_scaleAstat_init():
+
+  astarSol = scaleAstar.AStar(configs)
+  astarSol.solveScaleAstar()
+  misc.SavePickle(astarSol, configs["folder"]+"scaleAstar_res.pickle")
   configs = astarSol.cfg
   fig_sz,_ = astarSol.map_grid.shape
   fig_sz = 4
-  kAstar_res = astarSol.sol
+  scaleAstar_res = astarSol.sol
   print(" get ", len(astarSol.kAstar_pathlist), " A-STAR paths" )
 
 
-  for k in kAstar_res:
+  for k in scaleAstar_res:
 
-    px,py,_ = astarSol._path2xy(kAstar_res[k].init_path)
-    kAstar.plotTraj(astarSol.obs_pf, configs, \
-                  np.array([px,py]), np.array([kAstar_res[k].getPosX(),kAstar_res[k].getPosY()]), \
+    px,py,_ = astarSol._path2xy(scaleAstar_res[k].init_path)
+    scaleAstar.plotTraj(astarSol.obs_pf, configs, \
+                  np.array([px,py]), np.array([scaleAstar_res[k].getPosX(),scaleAstar_res[k].getPosY()]), \
                   configs["folder"]+"kAstar_raj_"+str(k)+".png", fig_sz)
-    print("k = ", k, "converge episode = ", kAstar_res[k].epiIdxCvg, " costJ = ", kAstar_res[k].J, " traj L = ", kAstar_res[k].l)
+    print("k = ", k, "converge episode = ", scaleAstar_res[k].epiIdxCvg, " costJ = ", scaleAstar_res[k].J, " traj L = ", scaleAstar_res[k].l)
+
 
 
 
@@ -113,7 +137,9 @@ def plot_compare_iters():
 
   pwdc_res_dict = misc.LoadPickle(configs["folder"]+"result.pickle")
   naive_res_dict = misc.LoadPickle(configs["folder"]+"naive_res.pickle")
-  kAstar_res_dict = misc.LoadPickle(configs["folder"]+"kAstar_res.pickle")
+  scaleAstar_res_dict = misc.LoadPickle(configs["folder"]+"scaleAstar_res.pickle")
+
+  # kAstar_res_dict = misc.LoadPickle(configs["folder"]+"kAstar_res.pickle")
 
 
   pwdc_res = pwdc_res_dict.sol
@@ -132,19 +158,35 @@ def plot_compare_iters():
   # plt.plot(epiIdxList+1, trajLenList/np.min(trajLenList), "bo")
 
 
-  kAstar_res = kAstar_res_dict.sol
-  epiIdxList_kAstar = list()
-  JcostList_kAstar = list()
-  trajLenList_kAstar = list()
-  for k in kAstar_res:
-    epiIdxList_kAstar.append(kAstar_res[k].epiIdxCvg)
-    JcostList_kAstar.append(kAstar_res[k].J)
-    trajLenList_kAstar.append(kAstar_res[k].l)
-  epiIdxList_kAstar = np.array(epiIdxList_kAstar)
-  JcostList_kAstar = np.array(JcostList_kAstar)
-  trajLenList_kAstar = np.array(trajLenList_kAstar)
-  plt.plot(epiIdxList_kAstar+1, JcostList_kAstar/np.min(JcostList_pwdc), "b.")
+  scaleAstar_res = scaleAstar__res_dict.sol
+  epiIdxList_scaleAstar = list()
+  JcostList_scaleAstar = list()
+  trajLenList_scaleAstar = list()
+  for k in scaleAstar_res:
+    epiIdxList_scaleAstar.append(scaleAstar_res[k].epiIdxCvg)
+    JcostList_scaleAstar.append(scaleAstar_res[k].J)
+    trajLenList_scaleAstar.append(scaleAstar_res[k].l)
+  epiIdxList_scaleAstar = np.array(epiIdxList_scaleAstar)
+  JcostList_scaleAstar = np.array(JcostList_scaleAstar)
+  trajLenList_scaleAstar = np.array(trajLenList_scaleAstar)
+  plt.plot(epiIdxList_scaleAstar + 1, JcostList_scaleAstar/np.min(JcostList_pwdc), "b.")
   # plt.plot(epiIdxList+1, trajLenList/np.min(trajLenList), "bo")
+
+
+  # kAstar_res = kAstar_res_dict.sol
+  # epiIdxList_kAstar = list()
+  # JcostList_kAstar = list()
+  # trajLenList_kAstar = list()
+  # for k in kAstar_res:
+  #   epiIdxList_kAstar.append(kAstar_res[k].epiIdxCvg)
+  #   JcostList_kAstar.append(kAstar_res[k].J)
+  #   trajLenList_kAstar.append(kAstar_res[k].l)
+  # epiIdxList_kAstar = np.array(epiIdxList_kAstar)
+  # JcostList_kAstar = np.array(JcostList_kAstar)
+  # trajLenList_kAstar = np.array(trajLenList_kAstar)
+  # plt.plot(epiIdxList_kAstar+1, JcostList_kAstar/np.min(JcostList_pwdc), "b.")
+  # # plt.plot(epiIdxList+1, trajLenList/np.min(trajLenList), "bo")
+
 
 
   lin_sol_cost_ratio = naive_res_dict["lin_sol_cost"]/np.min(JcostList_pwdc)
