@@ -15,6 +15,13 @@ import naive_init_baseline as naive
 import kAstar_init_baseline as kAstar
 
 
+# From config code provided by Husarion, 
+# https://github.com/husarion/rosbot_description/blob/master/src/rosbot_navigation/config/trajectory_planner.yaml
+# The max acceleration in either x or y direction can reache 1.5 m/s^2.
+# Although the max vel in this doc is 0.2m/s
+# We use the value provided by their doc for actual robot: https://husarion.com/manuals/rosbot/
+# - Maximum translational velocity	1.0 m/s
+# - Maximum rotational velocity	420 deg/s (7.33 rad/s)
 
 class Config():
 	"""
@@ -69,16 +76,16 @@ class Config():
 		configs["hausdorf_filter_thres"] = 8
 		# configs["obst_cov_val"] = 2*1e-4
 		configs["obst_cov_val"] = 2*1e-4
-		configs["vu_bounds"] = np.array([1/mapscale, 5, 0.3, 0.8]) # v,w,ua,uw
-		configs["weight_list"] = ([0.01, 1.2], [0.1,0.95],[0.2,0.8],[0.5,0.5],[0.8,0.2],[0.95,0.1],[1.2,0.01])
-
+		configs["vu_bounds"] = np.array([1/mapscale, 7.33, 2.2/mapscale, 1]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
 		weight_list = list()
-		weight_list.append([0.5,0.5])
-		weight_list.append([0.3,0.7])
-		weight_list.append([0.2,0.8])
-		weight_list.append([0.9,0.1])
-		weight_list.append([0.7,0.3])
-		configs["weight_list"] = weight_list
+		# weight_list.append([0.5,0.5])
+		# weight_list.append([0.3,0.7])
+		# weight_list.append([0.2,0.8])
+		# weight_list.append([0.9,0.1])
+		# weight_list.append([0.7,0.3])
+		configs["Astar_weight_list"] = weight_list
 
 
 		return configs
@@ -114,8 +121,16 @@ class Config():
 		configs["hausdorf_filter_thres"] = 8
 		# configs["obst_cov_val"] = 2*1e-4
 		configs["obst_cov_val"] = 7*1e-4
-		configs["vu_bounds"] = np.array([1/mapscale, 5, 0.3/mapscale, 0.8]) # v,w,ua,uw
-		configs["weight_list"] = ([0.01, 1.2], [0.1,0.95],[0.2,0.8],[0.5,0.5],[0.8,0.2],[0.95,0.1],[1.2,0.01])
+		configs["vu_bounds"] = np.array([1/mapscale, 7.33, 2.2/mapscale, 1]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
+		# weight_list.append([0.3,0.7])
+		# weight_list.append([0.2,0.8])
+		# weight_list.append([0.9,0.1])
+		# weight_list.append([0.7,0.3])
+		configs["Astar_weight_list"] = weight_list
 
 		return configs
 
@@ -133,7 +148,7 @@ class Config():
 		configs["n"] = 5
 		configs["m"] = 2
 		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
-		configs["Sgoal"] = np.array([0.68, 0.92, 0 ,0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.92, 0 ,0, 0])
 		configs["interval_value"] = dt
 		configs["npix"] = int(mapscale/dt) 
 
@@ -147,11 +162,17 @@ class Config():
 		configs["hausdorf_filter_thres"] = 8
 		# configs["obst_cov_val"] = 2*1e-4
 		configs["obst_cov_val"] = 7*1e-4
-		configs["vu_bounds"] = np.array([1/mapscale, 5, 0.3, 0.8]) # v,w,ua,uw
+		configs["vu_bounds"] = np.array([1/mapscale, 7.33, 2.2/mapscale, 1]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
 
 		weight_list = list()
-		weight_list.append([0.5,0.5])
-		configs["weight_list"] = weight_list
+		# weight_list.append([0.5,0.5])
+		# weight_list.append([0.3,0.7])
+		# weight_list.append([0.2,0.8])
+		# weight_list.append([0.9,0.1])
+		# weight_list.append([0.7,0.3])
+		configs["Astar_weight_list"] = weight_list
+
 
 		return configs
 
@@ -170,7 +191,7 @@ class Config():
 		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
 		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
 		configs["interval_value"] = dt
-		configs["npix"] = int(mapscale/dt)+20
+		configs["npix"] = int(mapscale/dt)+40
 		configs["emoa_path"] = "../public_emoa/build/run_emoa"
 		configs["iters_per_episode"] = 100
 		configs["optm_weights"] = [0.01, 5000, 200]
@@ -181,16 +202,16 @@ class Config():
 		configs["hausdorf_filter_thres"] = 8
 		# configs["obst_cov_val"] = 2*1e-4
 		configs["obst_cov_val"] = 2*1e-4
-		configs["vu_bounds"] = np.array([1/mapscale, 5, 0.3, 0.8]) # v,w,ua,uw
-		configs["weight_list"] = ([0.01, 1.2], [0.1,0.95],[0.2,0.8],[0.5,0.5],[0.8,0.2],[0.95,0.1],[1.2,0.01])
+		configs["vu_bounds"] = np.array([1/mapscale, 7.33, 0.5/mapscale, 1]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
 
 		weight_list = list()
-		weight_list.append([0.5,0.5])
-		weight_list.append([0.3,0.7])
-		weight_list.append([0.2,0.8])
-		weight_list.append([0.9,0.1])
-		weight_list.append([0.7,0.3])
-		configs["weight_list"] = weight_list
+		# weight_list.append([0.5,0.5])
+		# weight_list.append([0.3,0.7])
+		# weight_list.append([0.2,0.8])
+		# weight_list.append([0.9,0.1])
+		# weight_list.append([0.7,0.3])
+		configs["Astar_weight_list"] = weight_list
 
 
 		return configs

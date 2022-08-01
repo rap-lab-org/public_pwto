@@ -93,20 +93,14 @@ class AStar:
         :return: path and visited order
         """
 
-        weight_list = self.cfg["weight_list"]
+        weight = self.cfg["weight_kAstar"]
+        k = self.cfg["k_kStar"]
+        
+        path_list, _ = self.repeated_searching(self.s_start, self.s_goal, weight,k)
 
-        path_list, visited = [], []
+        return path_list
 
-
-        for weight in weight_list:
-            p_k, v_k = self.repeated_searching(self.s_start, self.s_goal, weight)
-            path_list.append(p_k)
-            visited.append(v_k)
-
-        # self.kAstar_pathlist = path_list
-        return path_list, visited
-
-    def repeated_searching(self, s_start, s_goal, weight):
+    def repeated_searching(self, s_start, s_goal, weight,k):
         """
         run A* with weight e.
         :param s_start: starting state
@@ -122,20 +116,30 @@ class AStar:
         heapq.heappush(OPEN,
                        (g[s_start] + self.heuristic(s_start), s_start))
 
-        while OPEN:
+        path_list = []
+        path_count = 0
+
+        while OPEN and path_count<k:
             _, s = heapq.heappop(OPEN)
             # print('current s',s)
 
             CLOSED.append(s)
 
             if s == s_goal:
-                break
+                p_k, v_k = self.extract_path(PARENT), CLOSED
+                path_list.append(p_k)
+                path_count +=1
 
             for s_n in self.get_neighbor(s):
                 new_cost = g[s] + self.cost(s, s_n,weight)
 
                 if s_n not in g:
                     g[s_n] = math.inf
+
+                if s_n == s_goal:
+                    g[s_n] = new_cost
+                    PARENT[s_n] = s
+                    heapq.heappush(OPEN, (g[s_n] + self.heuristic(s_n), s_n))
 
                 if new_cost < g[s_n]:  # conditions for updating Cost
                     g[s_n] = new_cost
@@ -303,7 +307,7 @@ class AStar:
         self._init()
 
         print("[INFO] k-best AStar, enter searching_repeated_astar...")
-        self.kAstar_pathlist,_ = self.searching_repeated_astar()
+        self.kAstar_pathlist = self.searching_repeated_astar()
 
         print("[INFO] k-best AStar, enter _initOpen...")
         self._initOpen()
@@ -430,8 +434,9 @@ if __name__ == '__main__':
     # configs["obst_cov_val"] = 2*1e-4
     configs["obst_cov_val"] = 2*1e-4
     configs["vu_bounds"] = np.array([1/mapscale, 5, 0.3, 0.8]) # v,w,ua,uw
-    configs["weight_list"] = ([0.01, 1.2], [0.1,0.95],[0.2,0.8],[0.5,0.5],[0.8,0.2],[0.95,0.1],[1.2,0.01])
-    # configs["weight_list"] = ([0.5,0.5],[0.8,0.2],[0.95,0.1],[1.2,0.01])
+    configs["weight_kAstar"] = [0.5, 0.5]
+    configs["k_kAstar"] = 2
+
 
     astar = AStar(configs)
 

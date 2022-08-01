@@ -20,26 +20,31 @@ import getConfig
 
 
 
-# mapname = 'random32_1'
+mapname = 'random32_1'
 # mapname = 'random16_1'
-mapname = 'random16_simple'
+# mapname = 'random16_simple'
 # mapname = 'paris_64'
 ConfigClass = getConfig.Config(mapname)
-configs = ConfigClass.configs
+# configs = ConfigClass.configs
 
 
 def test_pwdc():
   """
   """
+  configs = ConfigClass.configs
+
   solver = pwdc.PWDC(configs)
   solver.Solve()
   print("PWDC get", len(solver.sol), " solutions.")
   misc.SavePickle(solver, configs["folder"]+"result.pickle")
   return
 
+
 def test_pwdc_plot():
   """
   """
+  configs = ConfigClass.configs
+
   solver = misc.LoadPickle(configs["folder"]+"result.pickle")
   # solver = loaded[1]
   configs = solver.cfg
@@ -70,14 +75,24 @@ def test_pwdc_plot():
         + str(trj_v[i]) +"   " + str(trj_w[i]) +"   " + str(trj_av[i]) +"   " + str(trj_aw[i]) +'\n')
     file1.close()
 
-
   return
 
 def test_and_plot_naive_init():
-  # num_nodes = 170
-  num_nodes = 220
+
+  configs = ConfigClass.configs
+
+  solver_pwdc = misc.LoadPickle(configs["folder"]+"result.pickle")
+  pwdc_res = solver_pwdc.sol
+  trajLenList_pwdc = []
+  for k in pwdc_res:
+    trajLenList_pwdc.append(pwdc_res[k].l)
+  trajLenList_pwdc = np.array(trajLenList_pwdc)
+
+  num_nodes = int(np.mean(trajLenList_pwdc))
+  print('num nodes of the navie init',num_nodes)
   save_path = configs["folder"] + "naiveTraj.png"
-  max_iter = 1000
+  max_iter = int(configs["iters_per_episode"]* configs["total_epi"])
+
   # naive.run_naive_init(folder, configs, num_nodes, save_path, max_iter)
   naive.run_naive_init(configs, num_nodes, save_path, max_iter)
 
@@ -110,6 +125,19 @@ def test_and_plot_naive_init():
 
 def test_and_plot_scaleAstat_init():
 
+  configs = ConfigClass.configs
+
+  solver_pwdc = misc.LoadPickle(configs["folder"]+"result.pickle")
+  emoa_res = solver_pwdc.emoa_res_dict
+  num_pwdc_path = len(emoa_res)
+
+  print('num_pwdc_path',num_pwdc_path)  
+  co = 1
+  for k in range(num_pwdc_path):
+    weight_offset = co*k/num_pwdc_path*0.5
+    configs["Astar_weight_list"].append([0.5+weight_offset,0.5-weight_offset])
+    co = -co
+
   astarSol = scaleAstar.AStar(configs)
   astarSol.solveScaleAstar()
   misc.SavePickle(astarSol, configs["folder"]+"scaleAstar_res.pickle")
@@ -117,7 +145,7 @@ def test_and_plot_scaleAstat_init():
   fig_sz,_ = astarSol.map_grid.shape
   fig_sz = 4
   scaleAstar_res = astarSol.sol
-  print(" get ", len(astarSol.kAstar_pathlist), " A-STAR paths" )
+  print(" get ", len(astarSol.Astar_pathlist), " A-STAR paths" )
 
 
   for k in scaleAstar_res:
@@ -125,7 +153,7 @@ def test_and_plot_scaleAstat_init():
     px,py,_ = astarSol._path2xy(scaleAstar_res[k].init_path)
     scaleAstar.plotTraj(astarSol.obs_pf, configs, \
                   np.array([px,py]), np.array([scaleAstar_res[k].getPosX(),scaleAstar_res[k].getPosY()]), \
-                  configs["folder"]+"kAstar_raj_"+str(k)+".png", fig_sz)
+                  configs["folder"]+"scaleAstar_raj_"+str(k)+".png", fig_sz)
     print("k = ", k, "converge episode = ", scaleAstar_res[k].epiIdxCvg, " costJ = ", scaleAstar_res[k].J, " traj L = ", scaleAstar_res[k].l)
 
 
@@ -141,7 +169,6 @@ def plot_compare_iters():
 
   # kAstar_res_dict = misc.LoadPickle(configs["folder"]+"kAstar_res.pickle")
 
-
   pwdc_res = pwdc_res_dict.sol
   plt.figure(figsize=(3,2))
   epiIdxList_pwdc = list()
@@ -154,11 +181,11 @@ def plot_compare_iters():
   epiIdxList_pwdc = np.array(epiIdxList_pwdc)
   JcostList_pwdc = np.array(JcostList_pwdc)
   trajLenList_pwdc = np.array(trajLenList_pwdc)
-  plt.plot(epiIdxList_pwdc+1, JcostList_pwdc/np.min(JcostList_pwdc), "g.")
+  plt.plot(epiIdxList_pwdc+1, JcostList_pwdc/np.min(JcostList_pwdc), "g.",alpha=0.5)
   # plt.plot(epiIdxList+1, trajLenList/np.min(trajLenList), "bo")
 
 
-  scaleAstar_res = scaleAstar__res_dict.sol
+  scaleAstar_res = scaleAstar_res_dict.sol
   epiIdxList_scaleAstar = list()
   JcostList_scaleAstar = list()
   trajLenList_scaleAstar = list()
@@ -169,7 +196,7 @@ def plot_compare_iters():
   epiIdxList_scaleAstar = np.array(epiIdxList_scaleAstar)
   JcostList_scaleAstar = np.array(JcostList_scaleAstar)
   trajLenList_scaleAstar = np.array(trajLenList_scaleAstar)
-  plt.plot(epiIdxList_scaleAstar + 1, JcostList_scaleAstar/np.min(JcostList_pwdc), "b.")
+  plt.plot(epiIdxList_scaleAstar + 1, JcostList_scaleAstar/np.min(JcostList_pwdc), "b^",alpha=0.5)
   # plt.plot(epiIdxList+1, trajLenList/np.min(trajLenList), "bo")
 
 
@@ -190,7 +217,7 @@ def plot_compare_iters():
 
 
   lin_sol_cost_ratio = naive_res_dict["lin_sol_cost"]/np.min(JcostList_pwdc)
-  plt.plot([1,10],[lin_sol_cost_ratio,lin_sol_cost_ratio],'r--',lw=1)
+  plt.plot([1,10],[lin_sol_cost_ratio,lin_sol_cost_ratio],'r--',lw=2)
 
   rdm_sol_cost_ratio = naive_res_dict["rdm_sol_cost"]/np.min(JcostList_pwdc)
   plt.plot([1,10],[rdm_sol_cost_ratio,rdm_sol_cost_ratio],'c--',lw=1)
@@ -209,7 +236,7 @@ def plot_compare_iters():
 def plot_pareto_front():
 
   configs = ConfigClass.configs
-
+  # TODO: ADD WEIGHTED A STAR 
 
   solver = misc.LoadPickle(configs["folder"]+"result.pickle")
   res = solver.emoa_res_dict
@@ -237,10 +264,10 @@ def plot_pareto_front():
   plt.savefig(configs["folder"]+"pareto_front.png", bbox_inches='tight', dpi=200)
   return
 
+
 def plot_pareto_paths():
   """
   """
-
 
   configs = ConfigClass.configs
   solver = misc.LoadPickle(configs["folder"]+"result.pickle")
@@ -297,13 +324,15 @@ def plot_pareto_paths():
 
 if __name__ == "__main__":
 
-  test_pwdc()
+  # test_pwdc()
 
-  test_pwdc_plot()
+  # test_pwdc_plot()
 
-  test_and_plot_naive_init()
+  # test_and_plot_naive_init()
 
-  test_and_plot_kAstat_init()
+   # test_and_plot_kAstat_init()
+
+  test_and_plot_scaleAstat_init()
 
   plot_compare_iters()
 

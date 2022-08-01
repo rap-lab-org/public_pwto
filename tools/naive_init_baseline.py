@@ -28,7 +28,7 @@ def run_naive_init(configs, num_nodes, save_path, max_iter):
   obsts_all = misc.findObstacles(map_grid)
   grid_size,_ = map_grid.shape
   obsts = obsts_all / grid_size
-  obss = obs.ObstSet( obsts )
+  obss = obs.ObstSet( obsts ,configs["obst_cov_val"] )
   pf = obss.potentialField(1,1,configs["npix"])*100
   
   n = configs["n"]
@@ -37,7 +37,7 @@ def run_naive_init(configs, num_nodes, save_path, max_iter):
   initial_guess = misc.linearInitGuess(configs["Sinit"][0:2], configs["Sgoal"][0:2], \
     num_nodes, n, m, configs["interval_value"])
   
-  print('initial_guess',initial_guess)
+  # print('initial_guess',initial_guess)
 
   configs["optm_weights"][2] = 0 # no need to stay close to the initial guess.
   Zsol, info = optm_ddc2.dirCol_ddc2(\
@@ -59,7 +59,7 @@ def run_naive_init(configs, num_nodes, save_path, max_iter):
   plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
   plt.plot(configs["Sinit"][0],configs["Sinit"][1],"ro")
   plt.plot(configs["Sgoal"][0],configs["Sgoal"][1],"r*")
-  plt.plot(Xsol[0,:],Xsol[1,:],"r.", markersize=2)
+  plt.plot(Xsol[0,:],Xsol[1,:],"r-.", markersize=3)
 
   # 2nd, random initial guess
   np.random.seed(0)

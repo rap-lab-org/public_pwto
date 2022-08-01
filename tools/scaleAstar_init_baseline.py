@@ -20,7 +20,7 @@ import heapq
 
 from pwdc import TrajStruct
 
-class Astar:
+class AStar:
     """AStar set the cost + heuristics as the priority
     """
     def __init__(self, configs):
@@ -33,7 +33,7 @@ class Astar:
         # self.Env = env.Env()  # class Env
 
         self.u_set = [(-1, 0), (0, 1),
-                        (1, 0),  (0, -1)]  # feasible input set
+                      (1, 0),  (0, -1)]  # feasible input set
 
         # self.obs = self.Env.obs  # position of obstacles
 
@@ -44,7 +44,7 @@ class Astar:
 
         self.tjObjDict = dict()
         self.sol = dict()
-        self.kAstar_pathlist = []
+        self.Astar_pathlist = []
 
     def _init(self):
       """
@@ -93,7 +93,7 @@ class Astar:
         :return: path and visited order
         """
 
-        weight_list = self.cfg["weight_list"]
+        weight_list = self.cfg["Astar_weight_list"]
 
         path_list, visited = [], []
 
@@ -103,7 +103,7 @@ class Astar:
             path_list.append(p_k)
             visited.append(v_k)
 
-        # self.kAstar_pathlist = path_list
+        # self.Astar_pathlist = path_list
         return path_list, visited
 
     def repeated_searching(self, s_start, s_goal, weight):
@@ -238,7 +238,7 @@ class Astar:
         """
         generate initial guess
         """
-        px,py,node_num = self._path2xy(self.kAstar_pathlist[k])
+        px,py,node_num = self._path2xy(self.Astar_pathlist[k])
         return misc.path2InitialGuess(\
           px, py, node_num, self.cfg["n"], self.cfg["m"], self.cfg["interval_value"]),node_num
 
@@ -256,10 +256,10 @@ class Astar:
     def _initOpen(self):
         configs = self.cfg
 
-        for k in range(len(self.kAstar_pathlist)):
+        for k in range(len(self.Astar_pathlist)):
             tjObj = TrajStruct()
             tjObj.id = k
-            tjObj.init_path = self.kAstar_pathlist[k]
+            tjObj.init_path = self.Astar_pathlist[k]
             tjObj.Z, tjObj.l = self._getInitGuess(k)
             Zsol, info = optm_ddc2.dirCol_ddc2(\
                                 tjObj.Z, configs["Sinit"], configs["Sgoal"], \
@@ -296,14 +296,14 @@ class Astar:
           # self.tjObjDict.pop(tjObj.id) # remove it from candidates.
         return tjObj.isConverged
 
-    def SolvekAstar(self):
+    def solveScaleAstar(self):
         """
         """
         print("[INFO] scalarized AStar, enter _init...")
         self._init()
 
         print("[INFO] scalarized AStar, enter searching_repeated_astar...")
-        self.kAstar_pathlist,_ = self.searching_repeated_astar()
+        self.Astar_pathlist,_ = self.searching_repeated_astar()
 
         print("[INFO] scalarized AStar, enter _initOpen...")
         self._initOpen()
@@ -346,20 +346,20 @@ def plotTraj(pf, configs, p, tj, save_path, fig_sz):
 
     # def runopt(self):
 
-    #     cost_kAstar = []
-    #     node_num_kAstar = []
-    #     Zsol_kAstar = []
-    #     max_iter_kAstar = 1000
+    #     cost_Astar = []
+    #     node_num_Astar = []
+    #     Zsol_Astar = []
+    #     max_iter_Astar = 1000
 
 
-    #     for k in range(len(self.kAstar_pathlist)):
+    #     for k in range(len(self.Astar_pathlist)):
 
     #         astar_initial_guess,node_num = self._getInitGuess(k)
 
     #         Zsol, info = optm_ddc2.dirCol_ddc2(\
     #         astar_initial_guess, configs["Sinit"], configs["Sgoal"], \
     #         configs["optm_weights"], self.obss, node_num, \
-    #         configs["interval_value"], configs["vu_bounds"], max_iter=max_iter_kAstar)
+    #         configs["interval_value"], configs["vu_bounds"], max_iter=max_iter_Astar)
 
     #         Xsol, Usol, _ = opty.utils.parse_free(Zsol, configs["n"], configs["m"], node_num)
 
@@ -380,26 +380,26 @@ def plotTraj(pf, configs, p, tj, save_path, fig_sz):
     #         ###
     #         plt.draw()
     #         plt.pause(1)
-    #         plt.savefig(configs["folder"]+'kAstar_'+str(k)+'.png' , bbox_inches='tight', dpi=200)
+    #         plt.savefig(configs["folder"]+'Astar_'+str(k)+'.png' , bbox_inches='tight', dpi=200)
 
 
     #         ### print out cost value
     #         J = self.costJ(self.obss, Zsol, node_num, configs["optm_weights"][0], configs["optm_weights"][1], configs["n"], configs["m"])
-    #         cost_kAstar.append(J)
+    #         cost_Astar.append(J)
     #         print("linear init guess, Jcost = ", J)
 
-    #         node_num_kAstar.append(node_num)
-    #         Zsol_kAstar.append(Zsol)
+    #         node_num_Astar.append(node_num)
+    #         Zsol_Astar.append(Zsol)
 
     #     res_dict = dict()
-    #     res_dict["num_nodes"] = node_num_kAstar
-    #     res_dict["kAstar_sol"] = Zsol_kAstar
-    #     res_dict["kAstar_sol_cost"] = cost_kAstar
-    #     res_dict["max_iter"] = max_iter_kAstar
+    #     res_dict["num_nodes"] = node_num_Astar
+    #     res_dict["Astar_sol"] = Zsol_Astar
+    #     res_dict["Astar_sol_cost"] = cost_Astar
+    #     res_dict["max_iter"] = max_iter_Astar
     #     res_dict["pf"] = self.obs_pf
-    #     misc.SavePickle(res_dict, configs["folder"]+"kAstar_res.pickle")
+    #     misc.SavePickle(res_dict, configs["folder"]+"Astar_res.pickle")
 
-        # return cost_kAstar
+        # return cost_Astar
 
 
 
@@ -430,10 +430,10 @@ if __name__ == '__main__':
     # configs["obst_cov_val"] = 2*1e-4
     configs["obst_cov_val"] = 2*1e-4
     configs["vu_bounds"] = np.array([1/mapscale, 5, 0.3, 0.8]) # v,w,ua,uw
-    configs["weight_list"] = ([0.01, 1.2], [0.1,0.95],[0.2,0.8],[0.5,0.5],[0.8,0.2],[0.95,0.1],[1.2,0.01])
-    # configs["weight_list"] = ([0.5,0.5],[0.8,0.2],[0.95,0.1],[1.2,0.01])
+    configs["Astar_weight_list"] = ([0.01, 1.2], [0.1,0.95],[0.2,0.8],[0.5,0.5],[0.8,0.2],[0.95,0.1],[1.2,0.01])
+    # configs["Astar_weight_list"] = ([0.5,0.5],[0.8,0.2],[0.95,0.1],[1.2,0.01])
 
     astar = Astar(configs)
 
-    astar.SolvekAstar()
+    astar.solveScaleAstar()
 

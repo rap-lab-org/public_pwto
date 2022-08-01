@@ -6,7 +6,11 @@ import copy
 import numpy as np
 import matplotlib.pyplot as plt
 
-import context
+import sys
+sys.path.append('..')
+from pywsto import context
+
+# import context
 import misc
 import obstacle as obs
 import emoa_py_api as emoa
