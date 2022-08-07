@@ -87,12 +87,12 @@ class PWDC():
   """
   Pareto Warm-start Direct Collocation.
   """
-  def __init__(self, configs):
+  def __init__(self, configs, obs_pf0 = []):
     """
     """
     self.cfg = configs
     self.obss = []
-    self.obs_pf = []
+    self.obs_pf = obs_pf0
     self.emoa_res_dict = dict()
     # self.open = misc.PrioritySet()
     self.tjObjDict = dict()
@@ -124,7 +124,8 @@ class PWDC():
     obsts_all = misc.findObstacles(self.map_grid)
     obsts = obsts_all / grid_size # scale coordinates into [0,1]x[0,1]
     self.obss = obs.ObstSet( obsts, self.cfg["obst_cov_val"] )
-    self.obs_pf = self.obss.potentialField(1,1,self.cfg["npix"])*100
+    if self.obs_pf == []:
+      self.obs_pf = self.obss.potentialField(1,1,self.cfg["npix"])*100
     return
     
   def _graphSearch(self):
@@ -143,6 +144,9 @@ class PWDC():
     # vd = int(Sgoal[0]*npix*npix + Sgoal[1]*npix)
     vo = int(int(Sinit[0]*npix)*npix + int(Sinit[1]*npix))
     vd = int(int(Sgoal[0]*npix)*npix + int(Sgoal[1]*npix))
+
+    print("npix = ", npix)
+    print(" vo, vd = ", vo, vd)
 
 
     ## run EMOA*
@@ -304,6 +308,27 @@ def plotTraj(pf, configs, p, tj, save_path, fig_sz):
   plt.plot(d[0],d[1],"r*")
   plt.plot(p[0,:], p[1,:], "b--")
   plt.plot(tj[0,:], tj[1,:], "r.", markersize=1.5)
+  plt.xticks([0,1])
+  plt.yticks([0,1])
+  # plt.axis('off')
+  plt.draw()
+  plt.pause(1)
+  plt.savefig(save_path, bbox_inches='tight', pad_inches = 0, dpi=200)
+
+def plotTrajs(pf, configs, tjs, save_path, fig_sz):
+  """
+  """
+  fig = plt.figure(figsize=(fig_sz,fig_sz))
+  s = configs["Sinit"]
+  d = configs["Sgoal"]
+  xx = np.linspace(0,1,num=configs["npix"])
+  yy = np.linspace(0,1,num=configs["npix"])
+  Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
+  plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
+  plt.plot(s[0],s[1],"ro")
+  plt.plot(d[0],d[1],"r*")
+  for tj in tjs:
+    plt.plot(tj[0,:], tj[1,:], "r.", markersize=1.5)
   plt.xticks([0,1])
   plt.yticks([0,1])
   # plt.axis('off')

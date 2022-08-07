@@ -19,7 +19,8 @@ class ObstSet:
     self.rand_normheight = []
     self.flat_offset = 0
 
-    random.seed(1)
+    random.seed(0) # Richard: fixed with seed 0.
+
     for k in range(len(obs_pos_array)):
 
       self.rand_normheight.append(random.random())
@@ -30,11 +31,11 @@ class ObstSet:
 
     for k in range(len(obs_pos_array)):
 
-      self.mvn_list.append( multivariate_normal(obs_pos_array[k],self.cov) )  
+      # self.mvn_list.append( multivariate_normal(obs_pos_array[k],self.cov) )  
 
-      # # random cov, basic cov 7*1e-4 for 16*16
-      # rand_cov_co = 1.0 *(self.rand_normheight[k] - 0.5) +1
-      # self.mvn_list.append( multivariate_normal(obs_pos_array[k],rand_cov_co*self.cov) )
+      ### use the following two lines for random cov, basic cov 7*1e-4 for 16*16
+      rand_cov_co = 1.0 *(self.rand_normheight[k] - 0.5) +1
+      self.mvn_list.append( multivariate_normal(obs_pos_array[k],rand_cov_co*self.cov) )
 
     return
 

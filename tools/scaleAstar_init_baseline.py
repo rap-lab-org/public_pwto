@@ -23,12 +23,12 @@ from pwdc import TrajStruct
 class AStar:
     """AStar set the cost + heuristics as the priority
     """
-    def __init__(self, configs):
+    def __init__(self, configs, obs_pf = []):
 
 
         self.cfg = configs
         self.obss = []
-        self.obs_pf = []
+        self.obs_pf = obs_pf
 
         # self.Env = env.Env()  # class Env
 
@@ -62,8 +62,8 @@ class AStar:
       obsts_all = misc.findObstacles(self.map_grid)
       obsts = obsts_all / grid_size # scale coordinates into [0,1]x[0,1]
       self.obss = obs.ObstSet( obsts, self.cfg["obst_cov_val"] )
-      # self.obs_pf = self.obss.potentialField(1,1,self.cfg["npix"])*100
-      self.obs_pf = self.obss.potentialField(1,1,self.cfg["npix"])/100
+      if self.obs_pf == []:
+        self.obs_pf = self.obss.potentialField(1,1,self.cfg["npix"])/100
 
 
       print(self.obs_pf)
