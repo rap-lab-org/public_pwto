@@ -105,7 +105,12 @@ def run_naive_init_for_test(configs, num_nodes, max_iter):
   2022-08-06
   """
   ### generate map and potential field
-  map_grid = misc.LoadMapDao(configs["map_grid_path"])
+  map_grid = []
+  if "map_grid" in configs:
+    map_grid = configs["map_grid"]
+  else:
+    map_grid = misc.LoadMapDao(configs["map_grid_path"])
+
   obsts_all = misc.findObstacles(map_grid)
   grid_size,_ = map_grid.shape
   obsts = obsts_all / grid_size

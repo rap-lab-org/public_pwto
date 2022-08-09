@@ -117,9 +117,9 @@ class PWDC():
         self.map_grid = misc.LoadMapDaoDownSample(self.cfg["map_grid_path"], self.cfg["downsample"])
       else:
         self.map_grid = misc.LoadMapDao(self.cfg["map_grid_path"] )
-      
     else:
       self.map_grid = self.cfg["map_grid"]
+    
     grid_size,_ = self.map_grid.shape
     obsts_all = misc.findObstacles(self.map_grid)
     obsts = obsts_all / grid_size # scale coordinates into [0,1]x[0,1]
