@@ -105,7 +105,7 @@ def RunWeightedAstar(configs, start_state, goal_state, idx):
   return
 
 
-def RunNaiveInit(configs, start_state, goal_state, idx):
+def RunNaiveInit(configs, start_state, goal_state, idx, obs_pf):
   """
   """
   # override the default start and goal with the input ones.
@@ -134,7 +134,8 @@ def RunNaiveInit(configs, start_state, goal_state, idx):
     max_iter = int(configs["iters_per_episode"]* configs["total_epi"])
     print('num nodes of the navie init',num_nodes, "max_iter = ", max_iter)
     # naive.run_naive_init(folder, configs, num_nodes, save_path, max_iter)
-    res_dict = naive.run_naive_init_for_test(configs, num_nodes, max_iter)
+    save_fig_path = configs["folder"]+"instance_"+str(idx)+"_naive_init_fig.png"
+    res_dict = naive.run_naive_init_for_test(configs, num_nodes, save_fig_path, max_iter, obs_pf)
 
   save_path = configs["folder"] + "instance_"+str(idx)+"_dirColInit_result.pickle"
   misc.SavePickle(res_dict, save_path)
@@ -253,7 +254,7 @@ def main_test_naiveInit():
   goal_states = instance["goals"]
   configs["map_grid"] = instance["grids"]
   for ii in range(start_states.shape[0]):
-    RunNaiveInit(configs, start_states[ii,:], goal_states[ii,:], ii)
+    RunNaiveInit(configs, start_states[ii,:], goal_states[ii,:], ii, obs_pf)
   return
 
 def main_plot_pwdc():
@@ -440,6 +441,12 @@ def main_compare_cvg_iters():
   plt.draw()
   plt.pause(2)
   plt.savefig(configs["folder"]+"cost_ratio_hist.png", bbox_inches='tight', dpi=200)
+
+  ###
+  plt.draw()
+  plt.pause(1)
+  plt.savefig(save_path, bbox_inches='tight', dpi=200)
+
   return
 
 
@@ -476,10 +483,10 @@ def main_test_pwdc():
 
 if __name__ == "__main__":
 
-  main_test_pwdc()
-  main_test_wghA()
+  # main_test_pwdc()
+  # main_test_wghA()
   main_test_naiveInit()
 
-  main_plot_pwdc()
-  main_plot_cvg_iters()
-  main_compare_cvg_iters()
+  # main_plot_pwdc()
+  # main_plot_cvg_iters()
+  # main_compare_cvg_iters()

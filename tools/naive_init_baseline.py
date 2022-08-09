@@ -100,7 +100,7 @@ def run_naive_init(configs, num_nodes, save_path, max_iter):
   return
 
 
-def run_naive_init_for_test(configs, num_nodes, max_iter):
+def run_naive_init_for_test(configs, num_nodes, save_path, max_iter, pf):
   """
   2022-08-06
   """
@@ -123,7 +123,7 @@ def run_naive_init_for_test(configs, num_nodes, max_iter):
   initial_guess = misc.linearInitGuess(configs["Sinit"][0:2], configs["Sgoal"][0:2], \
     num_nodes, n, m, configs["interval_value"])
   
-  # print('initial_guess',initial_guess)
+  print('initial_guess',initial_guess)
 
   configs["optm_weights"][2] = 0 # no need to stay close to the initial guess.
   Zsol, info = optm_ddc2.dirCol_ddc2(\
@@ -141,7 +141,6 @@ def run_naive_init_for_test(configs, num_nodes, max_iter):
     configs["optm_weights"], obss, num_nodes, \
     configs["interval_value"], configs["vu_bounds"], max_iter)
   Xsol2, Usol2, _ = opty.utils.parse_free(Zsol2, n, m, num_nodes)
-  plt.plot(Xsol2[0,:],Xsol2[1,:],"y.", markersize=2)
 
   ### print out cost value
   J1 = costJ(obss, Zsol, num_nodes, configs["optm_weights"][0], configs["optm_weights"][1], n, m)
@@ -157,5 +156,33 @@ def run_naive_init_for_test(configs, num_nodes, max_iter):
   res_dict["rdm_sol_cost"] = J2
   res_dict["max_iter"] = max_iter
   # res_dict["pf"] = pf
+
+
+  ### Figure
+
+  fig = plt.figure(figsize=(4,4))
+  plt.xticks([0,1])
+  plt.yticks([0,1])
+  # plt.plot(initial_guess[:num_nodes],initial_guess[num_nodes:2*num_nodes],"b--")
+  xx = np.linspace(0,1,num=configs["npix"])
+  yy = np.linspace(0,1,num=configs["npix"])
+  Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
+
+  plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
+  plt.plot(configs["Sinit"][0],configs["Sinit"][1],"ro")
+  plt.plot(configs["Sgoal"][0],configs["Sgoal"][1],"r*")
+  plt.plot(Xsol[0,:],Xsol[1,:],"g--", markersize=3)
+  plt.plot(Xsol2[0,:],Xsol2[1,:],"g:", markersize=2)
+
+  ### print out cost value
+  J1 = costJ(obss, Zsol, num_nodes, configs["optm_weights"][0], configs["optm_weights"][1], n, m)
+  J2 = costJ(obss, Zsol2, num_nodes, configs["optm_weights"][0], configs["optm_weights"][1], n, m)
+  print("linear init guess, Jcost = ", J1 )
+  print("random init guess, Jcost = ", J2 )
+
+  plt.draw()
+  plt.pause(1)
+  plt.savefig(save_path, bbox_inches='tight', dpi=200)
+  ###
 
   return res_dict
