@@ -426,6 +426,17 @@ def main_compare_cvg_iters():
   # print("DirCol-linear > 2*PWDC", np.sum(mat_cvg_data[:,2] > 2*mat_cvg_data[:,0]))
   # print("DirCol-random > 2*PWDC", np.sum(mat_cvg_data[:,3] > 2*mat_cvg_data[:,0]))
 
+  with open(configs["folder"]+"converge_iters_wA_vs_PWTO.txt", 'w') as f:
+    f.write("#iters, DirCol-wA* > 2*PWDC = " + str( np.sum(mat_cvg_data[:,1] > 2*mat_cvg_data[:,0]) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,1] > 2*mat_cvg_data[:,0])/succ_count) )
+    f.write("\n")
+    f.write("#iters, DirCol-wA* fail to converge = " + str( np.sum(mat_cvg_data[:,1]==np.inf) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,1]==np.inf)/succ_count) )
+    f.write("\n")
+    ct = np.sum(mat_cost_data[:,1] > 2*mat_cost_data[:,0]) + np.sum(mat_cost_data[:,2] > 2*mat_cost_data[:,0]) + np.sum(mat_cost_data[:,3] > 2*mat_cost_data[:,0]) 
+    f.write("#costs, all baselines > 2*PWDC = " + str(ct) + ", percentage = "+str(ct*1.0/succ_count/3) )
+    f.write("\n")
+    ct = np.sum(mat_cost_data[:,1] > 1*mat_cost_data[:,0]) + np.sum(mat_cost_data[:,2] > 1*mat_cost_data[:,0]) + np.sum(mat_cost_data[:,3] > 1*mat_cost_data[:,0]) 
+    f.write("#costs, all baselines > 1*PWDC = " + str(ct) + ", percentage = "+str(ct*1.0/succ_count/3) )
+    f.write("\n")
 
   plt.figure(figsize=(3,2))
 
@@ -437,6 +448,8 @@ def main_compare_cvg_iters():
 
   count, _ = np.histogram( mat_cost_data[:,3] /mat_cost_data[:,0], bins=[0.5, 1, 1.5, 2.0, np.inf] )
   plt.bar(np.array([0.5, 1, 1.5, 2.0])+0.3, count, width=0.1, facecolor='b', alpha=0.8)
+
+  plt.axvline(x = 1, color = 'k')
 
   plt.draw()
   plt.pause(2)
@@ -478,10 +491,10 @@ def main_test_pwdc():
 
 if __name__ == "__main__":
 
-  main_test_pwdc()
-  main_test_wghA()
-  main_test_naiveInit()
+  # main_test_pwdc()
+  # main_test_wghA()
+  # main_test_naiveInit()
 
-  main_plot_pwdc()
-  main_plot_cvg_iters()
+  # main_plot_pwdc()
+  # main_plot_cvg_iters()
   main_compare_cvg_iters()
