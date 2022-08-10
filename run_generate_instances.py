@@ -153,7 +153,7 @@ def main_gen_tests(ts_name):
   return
 
 if __name__ == "__main__":
-  # main_gen_tests("random32A")
-  # main_gen_tests("random32B")
-  # main_gen_tests("random32C")
+  main_gen_tests("random32A")
+  main_gen_tests("random32B")
+  main_gen_tests("random32C")
   main_gen_tests("random32D")

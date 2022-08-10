@@ -4,9 +4,9 @@ from scipy.stats import multivariate_normal
 import time
 import random
 
-# FIX_COV_VAL = 2*1e-4
+FIX_COV_VAL = 2*1e-4
 
-FIX_COV_VAL = 1e-3
+# FIX_COV_VAL = 1e-3
 
 class ObstSet:
   

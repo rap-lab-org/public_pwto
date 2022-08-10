@@ -442,11 +442,6 @@ def main_compare_cvg_iters():
   plt.pause(2)
   plt.savefig(configs["folder"]+"cost_ratio_hist.png", bbox_inches='tight', dpi=200)
 
-  ###
-  plt.draw()
-  plt.pause(1)
-  plt.savefig(save_path, bbox_inches='tight', dpi=200)
-
   return
 
 
@@ -483,10 +478,10 @@ def main_test_pwdc():
 
 if __name__ == "__main__":
 
-  # main_test_pwdc()
-  # main_test_wghA()
+  main_test_pwdc()
+  main_test_wghA()
   main_test_naiveInit()
 
-  # main_plot_pwdc()
-  # main_plot_cvg_iters()
-  # main_compare_cvg_iters()
+  main_plot_pwdc()
+  main_plot_cvg_iters()
+  main_compare_cvg_iters()
