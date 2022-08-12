@@ -112,13 +112,13 @@ def main_gen_tests(ts_name):
   gridy = 32
   ntest = 10
   if ts_name == "random32A":
-    obst_thres = 0.13
-  elif ts_name == "random32B":
     obst_thres = 0.10
-  elif ts_name == "random32C":
+  elif ts_name == "random32B":
     obst_thres = 0.15
-  elif ts_name == "random32D":
+  elif ts_name == "random32C":
     obst_thres = 0.20
+  elif ts_name == "random32D":
+    obst_thres = 0.25
 
   grids = GenerateRandomGrids(gridx,gridy,obst_thres)
   starts, goals = GenStartGoals(grids, ntest)

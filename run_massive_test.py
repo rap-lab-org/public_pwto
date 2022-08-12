@@ -491,10 +491,10 @@ def main_test_pwdc():
 
 if __name__ == "__main__":
 
-  # main_test_pwdc()
-  # main_test_wghA()
-  # main_test_naiveInit()
+  main_test_pwdc()
+  main_test_wghA()
+  main_test_naiveInit()
 
-  # main_plot_pwdc()
-  # main_plot_cvg_iters()
+  main_plot_pwdc()
+  main_plot_cvg_iters()
   main_compare_cvg_iters()

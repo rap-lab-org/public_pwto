@@ -4,7 +4,7 @@ from scipy.stats import multivariate_normal
 import time
 import random
 
-FIX_COV_VAL = 6*1e-4
+FIX_COV_VAL = 5*1e-4
 
 # FIX_COV_VAL = 1e-3
 
