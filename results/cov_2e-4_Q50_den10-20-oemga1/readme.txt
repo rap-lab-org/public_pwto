@@ -14,3 +14,8 @@
     obst_thres = 0.15
   elif ts_name == "random32D":
     obst_thres = 0.20
+
+
+
+Q=50
+omega limit = 1.57
