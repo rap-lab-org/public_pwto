@@ -440,14 +440,14 @@ def main_compare_cvg_iters():
 
   plt.figure(figsize=(3,2))
 
-  count, _ = np.histogram( mat_cost_data[:,1] /mat_cost_data[:,0], bins=[0.5, 1, 1.5, 2.0, np.inf] )
-  plt.bar(np.array([0.5, 1, 1.5, 2.0])+0.1, count, width=0.1, facecolor='r', alpha=0.8)
+  count, _ = np.histogram( mat_cost_data[:,1] /mat_cost_data[:,0], bins=[0.0, 1, 2.0, np.inf] )
+  plt.bar(np.array([0.0, 1, 2.0])+0.2, count, width=0.2, facecolor='r', alpha=0.8)
 
-  count, _ = np.histogram( mat_cost_data[:,2] /mat_cost_data[:,0], bins=[0.5, 1, 1.5, 2.0, np.inf] )
-  plt.bar(np.array([0.5, 1, 1.5, 2.0])+0.2, count, width=0.1, facecolor='g', alpha=0.8)
+  count, _ = np.histogram( mat_cost_data[:,2] /mat_cost_data[:,0], bins=[0.0, 1, 2.0, np.inf] )
+  plt.bar(np.array([0.0, 1, 2.0])+0.4, count, width=0.2, facecolor='g', alpha=0.8)
 
-  count, _ = np.histogram( mat_cost_data[:,3] /mat_cost_data[:,0], bins=[0.5, 1, 1.5, 2.0, np.inf] )
-  plt.bar(np.array([0.5, 1, 1.5, 2.0])+0.3, count, width=0.1, facecolor='b', alpha=0.8)
+  count, _ = np.histogram( mat_cost_data[:,3] /mat_cost_data[:,0], bins=[0.0, 1, 2.0, np.inf] )
+  plt.bar(np.array([0.0, 1, 2.0])+0.6, count, width=0.2, facecolor='b', alpha=0.8)
 
   plt.axvline(x = 1, color = 'k')
 
@@ -491,10 +491,10 @@ def main_test_pwdc():
 
 if __name__ == "__main__":
 
-  main_test_pwdc()
-  main_test_wghA()
-  main_test_naiveInit()
+  # main_test_pwdc()
+  # main_test_wghA()
+  # main_test_naiveInit()
 
-  main_plot_pwdc()
-  main_plot_cvg_iters()
+  # main_plot_pwdc()
+  # main_plot_cvg_iters()
   main_compare_cvg_iters()
