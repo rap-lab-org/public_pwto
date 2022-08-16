@@ -100,7 +100,9 @@ class PWDC():
     return
 
   def costJ(self, Z, l):
-    """Minimize the sum of the squares of the control torque."""
+    """
+    Objective function J as defined in the problem statement. The numerical integrated version.
+    """
     X,U,_ = opty.utils.parse_free(Z, self.cfg["n"], self.cfg["m"], l)
     xy_tj = X[0:2,:].T
     J1 = self.cfg["optm_weights"][0]*np.sum(U**2)
@@ -119,7 +121,7 @@ class PWDC():
         self.map_grid = misc.LoadMapDao(self.cfg["map_grid_path"] )
     else:
       self.map_grid = self.cfg["map_grid"]
-    
+
     grid_size,_ = self.map_grid.shape
     obsts_all = misc.findObstacles(self.map_grid)
     obsts = obsts_all / grid_size # scale coordinates into [0,1]x[0,1]
@@ -130,6 +132,7 @@ class PWDC():
     
   def _graphSearch(self):
     """
+    Solve MOPP problem.
     """
 
     ## generate cost, 2-d now. TODO, more costs ?
@@ -251,6 +254,7 @@ class PWDC():
 
   def _optmEpisode(self, tjObj, epiIdx):
     """
+    One episode of optpimization.
     """
     Z, info = optm_ddc2.dirCol_ddc2(\
         tjObj.Z, self.cfg["Sinit"], self.cfg["Sgoal"], \
@@ -274,6 +278,7 @@ class PWDC():
 
   def Solve(self):
     """
+    Solve process.
     """
     print("[INFO] PWDC, enter _init...")
     self._init()

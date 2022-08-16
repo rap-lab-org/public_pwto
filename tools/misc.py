@@ -17,68 +17,6 @@ def LoadPickle(file_path):
   pickle_in = open(file_path,"rb")
   return pickle.load(pickle_in)
 
-def LoadMapDao(map_file):
-  grids = np.zeros((2,2))
-  with open(map_file,'r') as f:
-    lines = f.readlines()
-    lidx = 0
-    nx = 0
-    ny = 0
-    for line in lines:
-      if lidx == 1:
-        a = line.split(" ")
-        nx = int(a[1])
-      if lidx == 2:
-        a = line.split(" ")
-        ny = int(a[1])
-      if lidx == 4:
-        grids = np.zeros((nx,ny))
-      if lidx >= 4: # map data begin
-        x = lidx - 4
-        y = 0
-        a = line.split("\n")
-        # print(a[0])
-        # print(len(str(a[0])))
-        for ia in str(a[0]):
-          # print(ia)
-          if ia == "." or ia == "G":
-            grids[x,y] = 0
-          else:
-            grids[x,y] = 1
-          y = y+1
-      lidx = lidx + 1
-  return grids
-
-def LoadMapDaoDownSample(map_file, downsample=1):
-  grids = np.zeros((2,2))
-  with open(map_file,'r') as f:
-    lines = f.readlines()
-
-    lidx = 0
-    nx = 0
-    ny = 0
-    
-    a = lines[1].split(" ")
-    nx = int(int(a[1])/downsample)
-    b = lines[2].split(" ")
-    ny = int(int(b[1])/downsample)
-    
-    grids = np.zeros((nx,ny))
-
-    for lidx in range(nx):
-        x = int(lidx)*downsample + 4
-        linedata = lines[x].split("\n")
-        linedata = str(linedata[0])
-        # print(linedata)
-        for cidy in range(ny):
-          y = int(cidy)*downsample
-          ia = linedata[y]
-          if ia == "." or ia == "G":
-            grids[lidx,cidy] = 0
-          else:
-            grids[lidx,cidy] = 1
-  return grids
-
 
 def findObstacles(grid):
   """
@@ -118,32 +56,6 @@ def path2InitialGuess(px, py, n_nodes, n, m, interval_value):
     initial_guess[sidx+i-1] = ( initial_guess[3*n_nodes+i] - initial_guess[3*n_nodes+i-1] ) / interval_value # ua
     dw = ( initial_guess[4*n_nodes+i] - initial_guess[4*n_nodes+i-1] )
     initial_guess[sidx+n_nodes+i-1] = dw / interval_value # uw
-  return initial_guess
-
-def linearInitGuess(pstart, pend, n_nodes, n, m, interval_value):
-  """
-  """
-  initial_guess = np.ones(n_nodes*(n+m))*0
-  initial_guess[:n_nodes] = np.linspace(pstart[0],pend[0],n_nodes) # x
-  initial_guess[n_nodes:2*n_nodes] = np.linspace(pstart[1],pend[1],n_nodes) # y
-
-  for i in range(1,n_nodes):
-    dy = initial_guess[i] - initial_guess[i-1]
-    dx = initial_guess[n_nodes+i] - initial_guess[n_nodes+i-1]
-    initial_guess[2*n_nodes+i-1] = np.arctan2(dy,dx) # theta
-    initial_guess[3*n_nodes+i-1] = np.sqrt(dy**2+dx**2) / interval_value # v
-  sidx = n*(n_nodes)
-  for i in range(1,n_nodes):
-    dtheta = initial_guess[2*n_nodes+i] - initial_guess[2*n_nodes+i-1]
-    dtheta = np.arctan2(np.cos(dtheta),np.sin(dtheta)) # round to [-pi,pi]
-    initial_guess[4*n_nodes+i-1] = ( dtheta ) / interval_value # w
-  for i in range(1,n_nodes):
-    dy = initial_guess[i] - initial_guess[i-1]
-    dx = initial_guess[n_nodes+i] - initial_guess[n_nodes+i-1]
-    initial_guess[sidx+i-1] = ( initial_guess[3*n_nodes+i] - initial_guess[3*n_nodes+i-1] ) / interval_value # ua
-    dw = ( initial_guess[4*n_nodes+i] - initial_guess[4*n_nodes+i-1] )
-    initial_guess[sidx+n_nodes+i-1] = dw / interval_value # uw
-
   return initial_guess
 
 
@@ -219,34 +131,6 @@ def normalize(cmat):
     return cmat
   res_mat = (cmat-m) / (M-m) * 1000 # equivalent to keep 3 digits float number.
   return res_mat
-
-def scalarizeSolveEach(c_list, w, folder, emoa_exe, res_file, vo, vd, tlimit):
-  """
-  """
-  scalarized_mat = np.zeros(c_list[0].shape)
-  for i in range(len(c_list)):
-    scalarized_mat += w[i]*normalize(c_list[i])
-  res_dict = emoa.runEMOA([scalarized_mat], folder, emoa_exe, res_file, vo, vd, tlimit)
-  return res_dict
-
-def scalarizeSolve(c_list, n_weight, folder, emoa_exe, res_file, vo, vd, tlimit):
-  """
-  """
-  out_dict = dict()
-  w1_list = np.linspace(0,1,n_weight)
-  out_dict['paths'] = dict()
-  out_dict['costs'] = dict()
-  idx = 0
-  for w1 in w1_list:
-    w2 = 1-w1
-    res = scalarizeSolveEach(c_list, np.array([w1,w2]), folder, emoa_exe, res_file, vo, vd, tlimit)
-    if len(res['paths']) > 1:
-      sys.exit("[ERROR] Scalar map has more than one solution.")
-    for k in res['paths']:
-      out_dict['paths'][idx] = res['paths'][k] # there should be only one solution.
-      # out_dict['costs'][idx] = recoverPathCost(c_list, res['paths'][k]) # there should be only one solution.
-    idx += 1
-  return out_dict
 
 def pointHdfMinPart(nxt, v, p):
   """

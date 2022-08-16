@@ -5,68 +5,6 @@ from opty.direct_collocation import Problem
 from opty.utils import parse_free
 import obstacle as obs
 
-# def fc_ddc2(x,u):
-#   """
-#   fc = continuous dynamics, ddc2 = differential-drive car 2nd-order
-#   """
-#   return np.array( [ np.cos(x[2])*x[3] ,\
-#                      np.sin(x[2])*x[3] ,\
-#                      x[4] ,\
-#                      u[0] ,\
-#                      u[1] ] )
-# def fc_ddc2_A(x,u):
-#   """
-#   continuous, linearize, A
-#   """
-#   return np.array([[0, 0, -np.sin(x[2])*x[3], np.cos(x[2]), 0],
-#                    [0, 0,  np.cos(x[2])*x[3], np.sin(x[2]), 0],
-#                    [0, 0, 0, 0,  1],
-#                    [0, 0, 0, 0,  0],
-#                    [0, 0, 0, 0,  0]])
-
-# def fc_ddc2_B(x,u):
-#   """
-#   continuous, linearize, B
-#   """
-#   return np.array([[0, 0],
-#                    [0, 0],
-#                    [0, 0],
-#                    [1, 0],
-#                    [0, 1]])
-
-# def fd_ddc2(x,u,dt):
-#   """
-#   fd = discrete dynamics, ddc2 = differential-drive car 2nd-order
-#   x = [x,y,theta,v,w]
-#   u = [v_dot, w_dot]
-#   """
-#   return np.array( [ x[0] + np.cos(x[2])*x[3]*dt ,\
-#                      x[1] + np.sin(x[2])*x[3]*dt ,\
-#                      x[2] + x[4]*dt ,\
-#                      x[3] + u[0]*dt ,\
-#                      x[4] + u[1]*dt ] )
-
-# def fd_ddc2_A(x,u,dt):
-#   """
-#   linearize the discrete dynamics of the 2nd-order differential-drive car to obtain matrix A
-#   """
-#   return np.array([[1, 0, -np.sin(x[2])*x[3]*dt, np.cos(x[2])*dt, 0],
-#                    [0, 1,  np.cos(x[2])*x[3]*dt, np.sin(x[2])*dt, 0],
-#                    [0, 0, 1, 0, dt],
-#                    [0, 0, 0, 1,  0],
-#                    [0, 0, 0, 0,  1]])
-
-# def fd_ddc2_B(x,u,dt):
-#   """
-#   linearize the discrete dynamics of the 2nd-order differential-drive car to obtain matrix B
-#   """
-#   return np.array([[0, 0],
-#   	               [0, 0],
-#   	               [0, 0],
-#   	               [dt,0],
-#   	               [0,dt]])
-
-
 def dirCol_ddc2(initial_guess, Sinit, Sgoal, w, obss, num_nodes, interval_value, vu_bounds,max_iter):
   """
   obss = ObstacleSet object.
