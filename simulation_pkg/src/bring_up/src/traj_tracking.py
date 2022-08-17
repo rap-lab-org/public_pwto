@@ -110,7 +110,7 @@ class TrajTracking(object):
                                              [self.wp_yaw[i]-current_yaw]])
                         print('pose_err',pose_err)
 
-                        K_control = np.array([0.4,5,6]) # 32 by 32
+                        K_control = np.array([2,0.8,6]) # 32 by 32
 
                         v_cmd = self.wp_v[i]*math.cos(pose_err[2]) + K_control[0]*pose_err[0]
                         w_cmd = self.wp_w[i] + self.wp_v[i]*(K_control[1]*pose_err[1] + K_control[2]*math.sin(pose_err[2]))
@@ -120,7 +120,7 @@ class TrajTracking(object):
                         elif v_cmd - v_cmd_prev < -self.dv_lim:
                             v_cmd = v_cmd_prev - self.dv_lim
 
-                        if w_cmd - w_cmd_prev > self.dw_lim:
+                        if w_cmd - w_cmd_prev > self.dw_lim:s
                             w_cmd = w_cmd_prev + self.dw_lim
                         elif w_cmd - w_cmd_prev < -self.dw_lim:
                             w_cmd = w_cmd_prev - self.dw_lim
