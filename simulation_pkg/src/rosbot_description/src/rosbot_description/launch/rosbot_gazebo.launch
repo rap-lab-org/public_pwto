@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <!--the starting position of the vehicle-->
+    <arg name="map_scale" default="18.6"/>
+    <arg name="x_ini" default="0"/>
+    <arg name="y_ini" default="0"/>
+    <arg name="z_ini" default="0"/>
+    <arg name="roll_ini" default="0"/>
+    <arg name="pitch_ini" default="0"/>
+    <arg name="yaw_ini" default="0"/>
+
+  <rosparam command="load" file="$(find joint_state_controller)/joint_state_controller.yaml" />
+  <node name="joint_state_controller_spawner" pkg="controller_manager" type="spawner" output="screen" args="joint_state_controller" />
+
+  <param name="robot_description" command="$(find xacro)/xacro '$(find rosbot_description)/urdf/rosbot.xacro'"/>
+
+  <node name="rosbot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -param robot_description -model rosbot -x $(arg x_ini) -y $(arg y_ini) -z $(arg z_ini) -R $(arg roll_ini) -P $(arg pitch_ini) -Y $(arg yaw_ini)" />
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  
+
+</launch>

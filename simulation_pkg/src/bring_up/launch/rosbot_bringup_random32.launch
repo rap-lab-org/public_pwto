@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find bring_up)/world/random32_map.world"/> 
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="recording" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  
+  <include file="$(find rosbot_description)/launch/rosbot_gazebo.launch">
+      <!-- ******** Map for random 32-by-32 ******** -->
+      <arg name="map_scale" default="18.6"/>
+      <arg name="x_ini" default="1.86"/>
+      <arg name="y_ini" default="1.86"/>
+      <arg name="z_ini" default="0.6"/>
+      <arg name="roll_ini" default="0"/> 
+      <arg name="pitch_ini" default="0"/>
+      <arg name="yaw_ini" default="0.5163411662354211"/>  
+  </include>
+
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bring_up)/rviz/rosbot_random32.rviz" required="true"/>
+
+
+  <node name="waypoint_publisher" pkg="bring_up" type="waypoint_publisher.py" output="screen">
+    <!-- ******** Map for random 32-by-32 ******** -->
+    <param name="scale" type="double" value="18.6" />
+    <param name="path" value="$(find bring_up)/trajectory/traj_data_random32/solTraj_data_13.txt" />
+  </node> 
+
+
+  <node name="mesh_publisher" pkg="bring_up" type="terrain_mesh_marker.py" output="screen">
+    <!-- Map for random 32 by 32 -->
+    <param name="mesh_path" value="file://$(find bring_up)/world/random_32_scale18/random-32-32-terrain.dae" />
+  </node>
+
+
+   <!-- xxxxxxxxxx  32 all paths xxxxxxxxxxx -->
+    <node name="waypoint_publisher_allpaths_0" pkg="bring_up" type="waypoint_publisher_allpaths.py" output="screen">
+      <param name="scale" type="double" value="18.6" />
+      <param name="path_name" value="/RosBot_base_path_0" />      
+      <param name="path" value="$(find bring_up)/trajectory/traj_data_random32/solTraj_data_0.txt" />
+    </node> 
+
+    <node name="waypoint_publisher_allpaths_1" pkg="bring_up" type="waypoint_publisher_allpaths.py" output="screen">
+      <param name="scale" type="double" value="18.6" />
+      <param name="path_name" value="/RosBot_base_path_1" />      
+      <param name="path" value="$(find bring_up)/trajectory/traj_data_random32/solTraj_data_1.txt" />
+    </node> 
+
+    <node name="waypoint_publisher_allpaths_29" pkg="bring_up" type="waypoint_publisher_allpaths.py" output="screen">
+      <param name="scale" type="double" value="18.6" />
+      <param name="path_name" value="/RosBot_base_path_29" />      
+      <param name="path" value="$(find bring_up)/trajectory/traj_data_random32/solTraj_data_29.txt" />
+    </node> 
+
+    <node name="waypoint_publisher_allpaths_40" pkg="bring_up" type="waypoint_publisher_allpaths.py" output="screen">
+      <param name="scale" type="double" value="18.6" />
+      <param name="path_name" value="/RosBot_base_path_40" />      
+      <param name="path" value="$(find bring_up)/trajectory/traj_data_random32/solTraj_data_40.txt" />
+    </node> 
+
+
+
+</launch>

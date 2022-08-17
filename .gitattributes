@@ -1,0 +1,4 @@
+*.dae filter=lfs diff=lfs merge=lfs -text
+*.pgm filter=lfs diff=lfs merge=lfs -text
+simulation_pkg/src/bring_up/world/random_32_scale18/random-32-32-terrain.dae filter=lfs diff=lfs merge=lfs -text
+simulation_pkg/src/rosbot_description/src/rosbot_navigation/maps/test_map.pgm filter=lfs diff=lfs merge=lfs -text
