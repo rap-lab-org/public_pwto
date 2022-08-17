@@ -117,12 +117,12 @@ class TrajTracking(object):
 
                         if v_cmd - v_cmd_prev > self.dv_lim:
                             v_cmd = v_cmd_prev + self.dv_lim
-                        elif v_cmd - v_cmd_prev < self.dv_lim:
+                        elif v_cmd - v_cmd_prev < -self.dv_lim:
                             v_cmd = v_cmd_prev - self.dv_lim
 
                         if w_cmd - w_cmd_prev > self.dw_lim:
                             w_cmd = w_cmd_prev + self.dw_lim
-                        elif w_cmd - w_cmd_prev < self.dw_lim:
+                        elif w_cmd - w_cmd_prev < -self.dw_lim:
                             w_cmd = w_cmd_prev - self.dw_lim
 
                         # publish velocity command
