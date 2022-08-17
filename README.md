@@ -17,14 +17,14 @@
 
 ### Run SImulation
 
-* Create a sperate workspace and copy "/src" in "/simulation_pkg" to your workspace.
+* Create a separate workspace and copy the "/src" folder in "/simulation_pkg" to your workspace.
 
 * Build the packages in the workspace.
 
-* Change the <uri> in "/src/bring_up/world/random32_map.world" to your local path.
+* Change the `uri` link in "/src/bring_up/world/random32_map.world" to your local path.
 
 * run the simulation by `roslaunch bring_up rosbot_bringup_random32.launch` to launch Gazebo and Rviz.
 
 * run the trajectory tracking by `roslaunch bring_up rosbot_traj_tracking.launch`.
 
-* To plot the trajectory tracking results, run `python3 plot_traj.py`. Changing the 'traj_load_path' and 'traj_save_path' if necessary.
+* To plot the trajectory tracking results, run `python3 plot_traj.py`. Change the 'traj_load_path' and 'traj_save_path' if necessary.
