@@ -4,7 +4,7 @@
 
 ### Installation
 
-* Download and compile [EMOA*](https://github.com/wonderren/public_emoa) by following the instructions there. The downloading directory is suggested to be "../public_emoa" with respect to the directory of this readme file. Otherwise, context.py may need to be changed to get this package running (not tested).
+* Download and compile [EMOA\*](https://github.com/wonderren/public_emoa) by following the instructions there. The downloading directory is suggested to be "../public_emoa" with respect to the directory of this readme file. Otherwise, context.py may need to be changed to get this package running (not tested).
 
 * Install [cyipopt](https://cyipopt.readthedocs.io/en/stable/install.html#) by following the section "On Ubuntu 18.04 Using APT Dependencies".
 
@@ -15,16 +15,15 @@
 * File run_example.py provides an entry point to the PWTO implementation.
 
 
-### Run SImulation
+### Run Simulation
 
-* Create a separate workspace and copy the "/src" folder in "/simulation_pkg" to your workspace.
+The simulation verificartion of the trajectory feasibility is conducted in ROS with gazebo, based on the [ROSbot](https://husarion.com/manuals/rosbot) from HUSARION. All the packages to run the simulation are in "/simulation_pkg", where the `rosbot_description` is downloaded from the [thrid-party repository](https://github.com/husarion/rosbot_description) provided by HUSARION.
 
-* Build the packages in the workspace.
+* To run the simulation, first create a separate workspace and copy the "/src" folder in "/simulation_pkg" to your workspace. Then build the packages in the workspace.
 
-* Change the `uri` link in "/src/bring_up/world/random32_map.world" to your local path.
+* In "/src/bring_up/world/random32_map.world", Change the `$(PATH_TO_WORKSPACE)` in `uri` to the path to your the workspace folder.
 
-* run the simulation by `roslaunch bring_up rosbot_bringup_random32.launch` to launch Gazebo and Rviz.
+* Run the simulation enironment by `roslaunch bring_up rosbot_bringup_random32.launch` to launch Gazebo and Rviz.
 
-* run the trajectory tracking by `roslaunch bring_up rosbot_traj_tracking.launch`.
+* Run the trajectory tracking by `roslaunch bring_up rosbot_traj_tracking.launch`.
 
-* To plot the trajectory tracking results, run `python3 plot_traj.py`. Change the 'traj_load_path' and 'traj_save_path' if necessary.

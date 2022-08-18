@@ -15,14 +15,14 @@
 				<pose frame=''>0 0 0 0 0 0</pose>
 				<geometry>
 					<mesh>
-						<uri>file:///home/mrsd-lab/traversability_ws/src/bring_up/world/random_32_scale18/random-32-32-terrain.dae</uri>
+						<uri>file://$(PATH_TO_WORKSPACE)/src/bring_up/world/random_32_scale18/random-32-32-terrain.dae</uri>
 					</mesh>
 				</geometry>
 			</visual>
 			<collision name="collision1">
 				<geometry>
 					<mesh>
-						<uri>file:///home/mrsd-lab/traversability_ws/src/bring_up/world/random_32_scale18/random-32-32-terrain.dae</uri>
+						<uri>file://$(PATH_TO_WORKSPACE)/src/bring_up/world/random_32_scale18/random-32-32-terrain.dae</uri>
 					</mesh>
 				</geometry>
 			</collision>
