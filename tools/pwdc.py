@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 import sys
 sys.path.append('..')
-from pywsto import context
+import context
 
 # import context
 import misc
@@ -16,8 +16,6 @@ import obstacle as obs
 import emoa_py_api as emoa
 import optm_ddc2
 import opty.utils 
-
-## TODO, try 8-connected grid.
 
 class TrajStruct:
   """

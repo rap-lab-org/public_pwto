@@ -2,7 +2,7 @@
 
 
 
-### Installation
+### Run PWTO Planner
 
 * Download and compile [EMOA\*](https://github.com/wonderren/public_emoa) by following the instructions there. The downloading directory is suggested to be "../public_emoa" with respect to the directory of this readme file. Otherwise, context.py may need to be changed to get this package running (not tested).
 
@@ -23,7 +23,7 @@ The simulation verificartion of the trajectory feasibility is conducted in ROS w
 
 * In "/src/bring_up/world/random32_map.world", change the `$(PATH_TO_WORKSPACE)` in `uri` to the path to your the workspace folder.
 
-* Run the simulation enironment by `roslaunch bring_up rosbot_bringup_random32.launch` to launch Gazebo and Rviz.
+* Run the simulation environment by `roslaunch bring_up rosbot_bringup_random32.launch` to launch Gazebo and Rviz.
 
 * Run the trajectory tracking by `roslaunch bring_up rosbot_traj_tracking.launch`.
 

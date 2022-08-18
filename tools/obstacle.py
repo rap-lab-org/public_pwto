@@ -19,7 +19,7 @@ class ObstSet:
     self.rand_normheight = []
     self.flat_offset = 0
 
-    random.seed(0) # Richard: fixed with seed 0.
+    random.seed(0) # fixed with seed 0.
 
     for k in range(len(obs_pos_array)):
 

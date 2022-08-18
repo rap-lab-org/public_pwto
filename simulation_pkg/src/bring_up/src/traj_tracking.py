@@ -120,7 +120,7 @@ class TrajTracking(object):
                         elif v_cmd - v_cmd_prev < -self.dv_lim:
                             v_cmd = v_cmd_prev - self.dv_lim
 
-                        if w_cmd - w_cmd_prev > self.dw_lim:s
+                        if w_cmd - w_cmd_prev > self.dw_lim:
                             w_cmd = w_cmd_prev + self.dw_lim
                         elif w_cmd - w_cmd_prev < -self.dw_lim:
                             w_cmd = w_cmd_prev - self.dw_lim
