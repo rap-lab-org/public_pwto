@@ -21,7 +21,7 @@ The simulation verificartion of the trajectory feasibility is conducted in ROS w
 
 * To run the simulation, first create a separate workspace and copy the "/src" folder in "/simulation_pkg" to your workspace. Then build the packages in the workspace.
 
-* In "/src/bring_up/world/random32_map.world", Change the `$(PATH_TO_WORKSPACE)` in `uri` to the path to your the workspace folder.
+* In "/src/bring_up/world/random32_map.world", change the `$(PATH_TO_WORKSPACE)` in `uri` to the path to your the workspace folder.
 
 * Run the simulation enironment by `roslaunch bring_up rosbot_bringup_random32.launch` to launch Gazebo and Rviz.
 
