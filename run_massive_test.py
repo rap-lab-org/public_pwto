@@ -14,6 +14,7 @@ import obstacle as obs
 import naive_init_baseline as naive
 import kAstar_init_baseline as kAstar
 import scaleAstar_init_baseline as scaleAstar
+import trrt_init_baseline as tRRT
 
 import getConfig
 
@@ -25,7 +26,42 @@ import getConfig
 # mapname = 'random32A'
 # mapname = 'random32B'
 # mapname = 'random32C'
-mapname = 'random32D'
+# mapname = 'random32D'
+
+# mapname = 'random32E'
+# mapname = 'random32F'
+# mapname = 'random32G'
+# mapname = 'random32H'
+# mapname = 'random32I'
+# mapname = 'random32J'
+
+# mapname = 'random32AA'
+# mapname = 'random32K_1'
+# mapname = 'random32K_2'
+# mapname = 'random32K_3'
+
+# mapname = 'random32K_4'
+# mapname = 'random32K_5'
+# mapname = 'random32K_6'
+
+# mapname = 'random32L_1'
+# mapname = 'random32L_2'
+# mapname = 'random32L_3'
+
+
+# mapname = 'random32L_4'
+# mapname = 'random32L_5'
+# mapname = 'random32L_6'
+# mapname = 'random32L_7'
+# mapname = 'random32L_8'
+# mapname = 'random32L_9'
+# mapname = 'random32L_10'
+
+# mapname = 'random32A_trrt'
+# mapname = 'random32B_trrt'
+mapname = 'random32C_trrt'
+
+
 ConfigClass = getConfig.Config(mapname)
 NInstance = 10
 
@@ -80,7 +116,6 @@ def PlotPwdc(configs, start_state, goal_state, idx):
 
   return
 
-
 def RunWeightedAstar(configs, start_state, goal_state, idx):
   """
   """
@@ -92,16 +127,34 @@ def RunWeightedAstar(configs, start_state, goal_state, idx):
   solver_pwdc = misc.LoadPickle(pwdc_fname)
   # emoa_res = solver_pwdc.emoa_res_dict
 
-  w1 = 0.5
-  w2 = 0.5
-  print("weight = ", w1, w2)
-  configs["Astar_weight_list"].append([w1,w2])
+  # w1 = 0.5
+  # w2 = 0.5
+  # print("weight = ", w1, w2)
+  # configs["Astar_weight_list"].append([w1,w2])
 
   astarSol = scaleAstar.AStar(configs, solver_pwdc.obs_pf)
   astarSol.solveScaleAstar()
 
   res_fname = configs["folder"]+"instance_"+str(idx)+"_wghA_result.pickle"
   misc.SavePickle(astarSol, res_fname)
+  return
+
+def RunTranlationRRT(configs, start_state, goal_state, idx):
+  """
+  """
+  # override the default start and goal with the input ones.
+  configs["Sinit"] = start_state
+  configs["Sgoal"] = goal_state
+  
+  pwdc_fname = configs["folder"]+"instance_"+str(idx)+"_pwdc_result.pickle"
+  solver_pwdc = misc.LoadPickle(pwdc_fname)
+  # emoa_res = solver_pwdc.emoa_res_dict
+
+  tRRTSol = tRRT.transitionRRT(configs, solver_pwdc.obs_pf)
+  tRRT_res = tRRTSol.solveTRRT()
+
+  res_fname = configs["folder"]+"instance_"+str(idx)+"_tRRT_result.pickle"
+  misc.SavePickle(tRRTSol, res_fname)
   return
 
 
@@ -246,6 +299,19 @@ def main_test_wghA():
     RunWeightedAstar(configs, start_states[ii,:], goal_states[ii,:], ii)
   return
 
+def main_test_tRRT():
+  """
+  """
+  configs = ConfigClass.configs
+  instance = misc.LoadPickle(configs["folder"] + mapname + ".pickle")
+  obs_pf = instance["obs_pf"]
+  start_states = instance["starts"]
+  goal_states = instance["goals"]
+  configs["map_grid"] = instance["grids"]
+  for ii in range(start_states.shape[0]):
+    RunTranlationRRT(configs, start_states[ii,:], goal_states[ii,:], ii)
+  return
+
 def main_test_naiveInit():
   configs = ConfigClass.configs
   instance = misc.LoadPickle(configs["folder"] + mapname + ".pickle")
@@ -271,12 +337,73 @@ def main_plot_pwdc():
     PlotPwdc(configs, start_states[ii,:], goal_states[ii,:], ii)
     PlotParetoPaths(configs, start_states[ii,:], goal_states[ii,:], ii)
 
+def main_plot_baseline():
+  print("--- main_plot_baseline ---")
+  configs = ConfigClass.configs
+  print("configs[npix] = ", configs["npix"])
+  instance = misc.LoadPickle(configs["folder"] + mapname + ".pickle")
+  obs_pf = instance["obs_pf"]
+  start_states = instance["starts"]
+  goal_states = instance["goals"]
+  configs["map_grid"] = instance["grids"]
+  # ii = 1
+  for ii in range(NInstance):
+    Plotbaseline(configs, start_states[ii,:], goal_states[ii,:], ii,"wghA")
+    Plotbaseline(configs, start_states[ii,:], goal_states[ii,:], ii,"tRRT")
+
+
+def Plotbaseline(configs, start_state, goal_state, idx,baseline):
+
+  configs["Sinit"] = start_state
+  configs["Sgoal"] = goal_state
+  res_file_path = configs["folder"]+"instance_"+str(idx)+"_"+baseline+"_result.pickle"
+  
+  solver = misc.LoadPickle(res_file_path)
+  # print('len(solver.Astar_pathlist)',len(solver.Astar_pathlist))
+  # configs = solver.cfg
+  fig_sz,_ = solver.map_grid.shape
+  fig_sz = 4 # fixed figure size, (or adaptive? based on grid size)
+  res = solver.sol
+
+  # traj plot
+  fig = plt.figure(figsize=(fig_sz,fig_sz))
+  s = configs["Sinit"]
+  d = configs["Sgoal"]
+  xx = np.linspace(0,1,num=configs["npix"])
+  yy = np.linspace(0,1,num=configs["npix"])
+  Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
+  pf = solver.obs_pf
+  plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
+  plt.plot(s[0],s[1],"ro")
+  plt.plot(d[0],d[1],"r*")
+
+  for k in res:
+    px,py,_ = solver._path2xy(res[k].init_path)
+    plt.plot(px,py,"b--", alpha=0.6)
+
+    tj = np.array([res[k].getPosX(),res[k].getPosY()])
+    # plt.plot(tj[0,:], tj[1,:], "r.", markersize=1.0, alpha=0.6) # random 32x32
+    plt.plot(tj[0,:], tj[1,:], "r.", markersize=1.5, alpha=0.6) # random 16x16
+
+    print("k = ", k, "converge episode = ", res[k].epiIdxCvg, " costJ = ", res[k].J, " traj L = ", res[k].l)
+  
+  plt.xticks([0,1])
+  plt.yticks([0,1])
+  # plt.axis('off')
+  plt.draw()
+  plt.pause(1)
+  save_path = configs["folder"]+"instance_"+str(idx)+"_"+baseline+"Trajs.png"
+  plt.savefig(save_path, bbox_inches='tight', pad_inches = 0, dpi=200)
+
+  return
+
 
 def PlotCvgIters(idx):
 
   configs = ConfigClass.configs
   pwdc_res_dict = misc.LoadPickle(configs["folder"]+"instance_"+str(idx)+"_pwdc_result.pickle")
   scaleAstar_res_dict = misc.LoadPickle(configs["folder"]+"instance_"+str(idx)+"_wghA_result.pickle")
+  tRRT_res_dict = misc.LoadPickle(configs["folder"]+"instance_"+str(idx)+"_tRRT_result.pickle")  
   naive_res_dict = misc.LoadPickle(configs["folder"]+"instance_"+str(idx)+"_dirColInit_result.pickle")
 
   # kAstar_res_dict = misc.LoadPickle(configs["folder"]+"kAstar_res.pickle")
@@ -311,19 +438,20 @@ def PlotCvgIters(idx):
     plt.plot(epiIdxList_scaleAstar + 1, JcostList_scaleAstar/np.min(JcostList_pwdc), "b^",alpha=0.5)
   # plt.plot(epiIdxList+1, trajLenList/np.min(trajLenList), "bo")
 
-  # kAstar_res = kAstar_res_dict.sol
-  # epiIdxList_kAstar = list()
-  # JcostList_kAstar = list()
-  # trajLenList_kAstar = list()
-  # for k in kAstar_res:
-  #   epiIdxList_kAstar.append(kAstar_res[k].epiIdxCvg)
-  #   JcostList_kAstar.append(kAstar_res[k].J)
-  #   trajLenList_kAstar.append(kAstar_res[k].l)
-  # epiIdxList_kAstar = np.array(epiIdxList_kAstar)
-  # JcostList_kAstar = np.array(JcostList_kAstar)
-  # trajLenList_kAstar = np.array(trajLenList_kAstar)
-  # plt.plot(epiIdxList_kAstar+1, JcostList_kAstar/np.min(JcostList_pwdc), "b.")
-  # # plt.plot(epiIdxList+1, trajLenList/np.min(trajLenList), "bo")
+  tRRT_res = tRRT_res_dict.sol
+  epiIdxList_tRRT = list()
+  JcostList_tRRT = list()
+  trajLenList_tRRT = list()
+  for k in tRRT_res:
+    epiIdxList_tRRT.append(tRRT_res[k].epiIdxCvg)
+    JcostList_tRRT.append(tRRT_res[k].J)
+    trajLenList_tRRT.append(tRRT_res[k].l)
+  epiIdxList_tRRT = np.array(epiIdxList_tRRT)
+  JcostList_tRRT = np.array(JcostList_tRRT)
+  trajLenList_tRRT = np.array(trajLenList_tRRT)
+  if len(JcostList_pwdc) > 0:
+    plt.plot(epiIdxList_tRRT+1, JcostList_tRRT/np.min(JcostList_pwdc), "g^",alpha=0.5)
+  # plt.plot(epiIdxList+1, trajLenList/np.min(trajLenList), "bo")
 
   ## DirCol + naive init
 
@@ -352,8 +480,8 @@ def main_compare_cvg_iters():
   """
   """
   configs = ConfigClass.configs
-  mat_cvg_data = np.zeros([NInstance,2])
-  mat_cost_data = np.zeros([NInstance,4])
+  mat_cvg_data = np.zeros([NInstance,3])
+  mat_cost_data = np.zeros([NInstance,5])
 
   np.set_printoptions(precision=3, suppress=True)
   
@@ -367,6 +495,7 @@ def main_compare_cvg_iters():
       succ_count = succ_count + 1
     scaleAstar_res_dict = misc.LoadPickle(configs["folder"]+"instance_"+str(idx)+"_wghA_result.pickle")
     naive_res_dict = misc.LoadPickle(configs["folder"]+"instance_"+str(idx)+"_dirColInit_result.pickle")
+    tRRT_res_dict = misc.LoadPickle(configs["folder"]+"instance_"+str(idx)+"_tRRT_result.pickle")  
 
     ## pwdc ##
     pwdc_res = pwdc_res_dict.sol
@@ -398,54 +527,105 @@ def main_compare_cvg_iters():
       mat_cvg_data[idx,1] = np.inf
       mat_cost_data[idx,1] = np.inf
 
+    ## tRRT ##
+    tRRT_res = tRRT_res_dict.sol
+    epiIdxList_tRRT = list()
+    JcostList_tRRT = list()
+    trajLenList_tRRT = list()
+    for k in tRRT_res:
+      epiIdxList_tRRT.append(tRRT_res[k].epiIdxCvg)
+      JcostList_tRRT.append(tRRT_res[k].J)
+      trajLenList_tRRT.append(tRRT_res[k].l)
+    if len(tRRT_res) > 0:
+      epiIdxList_tRRT = np.array(epiIdxList_tRRT)
+      JcostList_tRRT = np.array(JcostList_tRRT)
+      mat_cvg_data[idx,2] = np.min(epiIdxList_tRRT)
+      mat_cost_data[idx,2] = np.min(JcostList_tRRT)
+    else:
+      mat_cvg_data[idx,2] = np.inf
+      mat_cost_data[idx,2] = np.inf
+
+
     ## DirCol + naive init
     naive_res_dict = misc.LoadPickle(configs["folder"]+"instance_"+str(idx)+"_dirColInit_result.pickle")
-    mat_cost_data[idx,2] = naive_res_dict["lin_sol_cost"]
-    mat_cost_data[idx,3] = naive_res_dict["rdm_sol_cost"]
+    mat_cost_data[idx,3] = naive_res_dict["lin_sol_cost"]
+    mat_cost_data[idx,4] = naive_res_dict["rdm_sol_cost"]
 
   print("----mapname = ", mapname, "----")
   print("----mat_cost_data----")
   print(mat_cost_data)
   print("----mat_cost_data, PWDC succeeds in = ", succ_count, " cases ----")
   print("DirCol-wA* > 2*PWDC", np.sum(mat_cost_data[:,1] > 2*mat_cost_data[:,0]), np.sum(mat_cost_data[:,1] > 2*mat_cost_data[:,0])/succ_count)
-  print("DirCol-linear > 2*PWDC", np.sum(mat_cost_data[:,2] > 2*mat_cost_data[:,0]), np.sum(mat_cost_data[:,2] > 2*mat_cost_data[:,0])/succ_count)
-  print("DirCol-random > 2*PWDC", np.sum(mat_cost_data[:,3] > 2*mat_cost_data[:,0]), np.sum(mat_cost_data[:,3] > 2*mat_cost_data[:,0])/succ_count)
+  print("DirCol-tRRT > 2.0*PWDC", np.sum(mat_cost_data[:,2] > 2*mat_cost_data[:,0]), np.sum(mat_cost_data[:,2] > 1.0*mat_cost_data[:,0])/succ_count)
+  print("DirCol-linear > 2*PWDC", np.sum(mat_cost_data[:,3] > 2*mat_cost_data[:,0]), np.sum(mat_cost_data[:,3] > 2*mat_cost_data[:,0])/succ_count)
+  print("DirCol-random > 2*PWDC", np.sum(mat_cost_data[:,4] > 2*mat_cost_data[:,0]), np.sum(mat_cost_data[:,4] > 2*mat_cost_data[:,0])/succ_count)
   print("------------------")
   print("DirCol-wA* > 1.5*PWDC", np.sum(mat_cost_data[:,1] > 1.5*mat_cost_data[:,0]), np.sum(mat_cost_data[:,1] > 1.5*mat_cost_data[:,0])/succ_count)
-  print("DirCol-linear > 1.5*PWDC", np.sum(mat_cost_data[:,2] > 1.5*mat_cost_data[:,0]), np.sum(mat_cost_data[:,2] > 1.5*mat_cost_data[:,0])/succ_count)
-  print("DirCol-random > 1.5*PWDC", np.sum(mat_cost_data[:,3] > 1.5*mat_cost_data[:,0]), np.sum(mat_cost_data[:,3] > 1.5*mat_cost_data[:,0])/succ_count)
+  print("DirCol-tRRT > 1.5*PWDC", np.sum(mat_cost_data[:,2] > 1.5*mat_cost_data[:,0]), np.sum(mat_cost_data[:,2] > 1.0*mat_cost_data[:,0])/succ_count)
+  print("DirCol-linear > 1.5*PWDC", np.sum(mat_cost_data[:,3] > 1.5*mat_cost_data[:,0]), np.sum(mat_cost_data[:,3] > 1.5*mat_cost_data[:,0])/succ_count)
+  print("DirCol-random > 1.5*PWDC", np.sum(mat_cost_data[:,4] > 1.5*mat_cost_data[:,0]), np.sum(mat_cost_data[:,4] > 1.5*mat_cost_data[:,0])/succ_count)
   print("------------------")
   print("DirCol-wA* > 1.0*PWDC", np.sum(mat_cost_data[:,1] > 1.0*mat_cost_data[:,0]), np.sum(mat_cost_data[:,1] > 1.0*mat_cost_data[:,0])/succ_count)
-  print("DirCol-linear > 1.0*PWDC", np.sum(mat_cost_data[:,2] > 1.0*mat_cost_data[:,0]), np.sum(mat_cost_data[:,2] > 1.0*mat_cost_data[:,0])/succ_count)
-  print("DirCol-random > 1.0*PWDC", np.sum(mat_cost_data[:,3] > 1.0*mat_cost_data[:,0]), np.sum(mat_cost_data[:,3] > 1.0*mat_cost_data[:,0])/succ_count)
+  print("DirCol-tRRT > 1.0*PWDC", np.sum(mat_cost_data[:,2] > 1.0*mat_cost_data[:,0]), np.sum(mat_cost_data[:,2] > 1.0*mat_cost_data[:,0])/succ_count)
+  print("DirCol-linear > 1.0*PWDC", np.sum(mat_cost_data[:,3] > 1.0*mat_cost_data[:,0]), np.sum(mat_cost_data[:,3] > 1.0*mat_cost_data[:,0])/succ_count)
+  print("DirCol-random > 1.0*PWDC", np.sum(mat_cost_data[:,4] > 1.0*mat_cost_data[:,0]), np.sum(mat_cost_data[:,4] > 1.0*mat_cost_data[:,0])/succ_count)
 
   print("----mat_cvg_data----")
   print(mat_cvg_data)
     
   print("DirCol-wA* > 2*PWDC", np.sum(mat_cvg_data[:,1] > 2*mat_cvg_data[:,0]), np.sum(mat_cvg_data[:,1] > 2*mat_cvg_data[:,0])/succ_count)
+  print("DirCol-tRRT > 2*PWDC", np.sum(mat_cost_data[:,2] > 2.0*mat_cost_data[:,0]), np.sum(mat_cost_data[:,2] > 2*mat_cost_data[:,0])/succ_count)
+
   # print("DirCol-linear > 2*PWDC", np.sum(mat_cvg_data[:,2] > 2*mat_cvg_data[:,0]))
   # print("DirCol-random > 2*PWDC", np.sum(mat_cvg_data[:,3] > 2*mat_cvg_data[:,0]))
 
 
+  with open(configs["folder"]+"converge_iters_wA_vs_PWTO.txt", 'w') as f:
+    f.write("#iters, DirCol-wA* > 2*PWDC = " + str( np.sum(mat_cvg_data[:,1] > 2*mat_cvg_data[:,0]) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,1] > 2*mat_cvg_data[:,0])/succ_count) )
+    f.write("\n")
+    f.write("#iters, DirCol-wA* fail to converge = " + str( np.sum(mat_cvg_data[:,1]==np.inf) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,1]==np.inf)/succ_count) )
+    f.write("\n")
+
+    f.write("#iters, DirCol-tRRT > 2*PWDC = " + str( np.sum(mat_cvg_data[:,2] > 2*mat_cvg_data[:,0]) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,2] > 2*mat_cvg_data[:,0])/succ_count) )
+    f.write("\n")
+    f.write("#iters, DirCol-tRRT fail to converge = " + str( np.sum(mat_cvg_data[:,2]==np.inf) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,2]==np.inf)/succ_count) )
+    f.write("\n")
+
+    ct = np.sum(mat_cost_data[:,1] > 2*mat_cost_data[:,0]) \
+       + np.sum(mat_cost_data[:,2] > 2*mat_cost_data[:,0]) \
+       + np.sum(mat_cost_data[:,3] > 2*mat_cost_data[:,0]) \
+       + np.sum(mat_cost_data[:,4] > 2*mat_cost_data[:,0]) 
+    f.write("#costs, all baselines > 2*PWDC = " + str(ct) + ", percentage = "+str(ct*1.0/succ_count/4) )
+    f.write("\n")
+    ct = np.sum(mat_cost_data[:,1] > 1*mat_cost_data[:,0]) \
+       + np.sum(mat_cost_data[:,2] > 1*mat_cost_data[:,0]) \
+       + np.sum(mat_cost_data[:,3] > 1*mat_cost_data[:,0]) \
+       + np.sum(mat_cost_data[:,4] > 1*mat_cost_data[:,0]) 
+    f.write("#costs, all baselines > 1*PWDC = " + str(ct) + ", percentage = "+str(ct*1.0/succ_count/4) )
+    f.write("\n")
+
+
+
   plt.figure(figsize=(3,2))
 
-  count, _ = np.histogram( mat_cost_data[:,1] /mat_cost_data[:,0], bins=[0.5, 1, 1.5, 2.0, np.inf] )
-  plt.bar(np.array([0.5, 1, 1.5, 2.0])+0.1, count, width=0.1, facecolor='r', alpha=0.8)
 
-  count, _ = np.histogram( mat_cost_data[:,2] /mat_cost_data[:,0], bins=[0.5, 1, 1.5, 2.0, np.inf] )
-  plt.bar(np.array([0.5, 1, 1.5, 2.0])+0.2, count, width=0.1, facecolor='g', alpha=0.8)
+  count, _ = np.histogram( mat_cost_data[:,1] /mat_cost_data[:,0], bins=[0.0, 1, 2.0, np.inf] )
+  plt.bar(np.array([0.0, 1, 2.0])+0.2, count, width=0.2, facecolor='r', alpha=0.8)
 
-  count, _ = np.histogram( mat_cost_data[:,3] /mat_cost_data[:,0], bins=[0.5, 1, 1.5, 2.0, np.inf] )
-  plt.bar(np.array([0.5, 1, 1.5, 2.0])+0.3, count, width=0.1, facecolor='b', alpha=0.8)
+  count, _ = np.histogram( mat_cost_data[:,2] /mat_cost_data[:,0], bins=[0.0, 1, 2.0, np.inf] )
+  plt.bar(np.array([0.0, 1, 2.0])+0.6, count, width=0.2, facecolor='y', alpha=0.8)
+
+  count, _ = np.histogram( mat_cost_data[:,3] /mat_cost_data[:,0], bins=[0.0, 1, 2.0, np.inf] )
+  plt.bar(np.array([0.0, 1, 2.0])+0.4, count, width=0.2, facecolor='g', alpha=0.8)
+
+  count, _ = np.histogram( mat_cost_data[:,4] /mat_cost_data[:,0], bins=[0.0, 1, 2.0, np.inf] )
+  plt.bar(np.array([0.0, 1, 2.0])+0.6, count, width=0.2, facecolor='b', alpha=0.8)
+
+  plt.axvline(x = 1, color = 'k')
 
   plt.draw()
   plt.pause(2)
   plt.savefig(configs["folder"]+"cost_ratio_hist.png", bbox_inches='tight', dpi=200)
-
-  ###
-  plt.draw()
-  plt.pause(1)
-  plt.savefig(save_path, bbox_inches='tight', dpi=200)
 
   return
 
@@ -483,10 +663,13 @@ def main_test_pwdc():
 
 if __name__ == "__main__":
 
-  # main_test_pwdc()
-  # main_test_wghA()
+  main_test_pwdc()
+  main_test_wghA()
   main_test_naiveInit()
 
-  # main_plot_pwdc()
-  # main_plot_cvg_iters()
-  # main_compare_cvg_iters()
+  main_test_tRRT()
+
+  main_plot_pwdc()
+  main_plot_baseline()
+  main_plot_cvg_iters()
+  main_compare_cvg_iters()

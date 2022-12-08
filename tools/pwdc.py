@@ -302,7 +302,7 @@ def plotTraj(pf, configs, p, tj, save_path, fig_sz):
   d = configs["Sgoal"]
   xx = np.linspace(0,1,num=configs["npix"])
   yy = np.linspace(0,1,num=configs["npix"])
-  Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
+  X,Y = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
   plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
   plt.plot(s[0],s[1],"ro")
   plt.plot(d[0],d[1],"r*")
@@ -323,7 +323,7 @@ def plotTrajs(pf, configs, tjs, save_path, fig_sz):
   d = configs["Sgoal"]
   xx = np.linspace(0,1,num=configs["npix"])
   yy = np.linspace(0,1,num=configs["npix"])
-  Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
+  X,Y = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
   plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
   plt.plot(s[0],s[1],"ro")
   plt.plot(d[0],d[1],"r*")

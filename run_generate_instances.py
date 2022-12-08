@@ -96,7 +96,8 @@ def GenObsPf(map_grid, npix):
     grid_size,_ = map_grid.shape # assume to be a square
     obsts_all = misc.findObstacles(map_grid)
     obsts = obsts_all / grid_size # scale coordinates into [0,1]x[0,1]
-    obss = obs.ObstSet( obsts )
+    obss = obs.ObstSet( obsts) #/// 
+
     obs_pf = obss.potentialField(1, 1, npix)*100
     return obs_pf
 
@@ -119,6 +120,61 @@ def main_gen_tests(ts_name):
     obst_thres = 0.15
   elif ts_name == "random32D":
     obst_thres = 0.20
+  elif ts_name == "random32E":  # very sparse map
+    obst_thres = 0.05
+  elif ts_name == "random32F":  # very sparse map
+    obst_thres = 0.05
+  elif ts_name == "random32G":  # very sparse map
+    obst_thres = 0.10
+  elif ts_name == "random32H":  # very sparse map
+    obst_thres = 0.18
+  elif ts_name == "random32I":  # very sparse map
+    obst_thres = 0.18
+  elif ts_name == "random32J":  # cov=1e-3
+    obst_thres = 0.18
+
+  elif ts_name == "random32AA":  # cov=6e-4
+    obst_thres = 0.20
+
+  elif ts_name == "random32K_1":  # cov=5e-4
+    obst_thres = 0.20
+  elif ts_name == "random32K_2":  # cov=5e-4
+    obst_thres = 0.15
+  elif ts_name == "random32K_3":  # cov=5e-4
+    obst_thres = 0.10
+  elif ts_name == "random32K_4":  # cov=5e-4
+    obst_thres = 0.35
+  elif ts_name == "random32K_5":  # cov=5e-4
+    obst_thres = 0.30
+  elif ts_name == "random32K_6":  # cov=5e-4
+    obst_thres = 0.25
+
+  elif ts_name == "random32L_1":  # cov=2e-4
+    obst_thres = 0.3
+  elif ts_name == "random32L_2":  # cov=2e-4
+    obst_thres = 0.25
+  elif ts_name == "random32L_3":  # cov=2e-4
+    obst_thres = 0.20
+
+  elif ts_name == "random32L_4":  # cov=2e-4
+    obst_thres = 0.3
+  elif ts_name == "random32L_5":  # cov=2e-4
+    obst_thres = 0.25
+  elif ts_name == "random32L_6":  # cov=2e-4
+    obst_thres = 0.20
+  elif ts_name == "random32L_7":  # cov=2e-4
+    obst_thres = 0.15
+
+
+  elif ts_name == "random32L_8":  # cov=2e-4
+    obst_thres = 0.1
+    
+  elif ts_name == "random32L_9":  # cov=2e-4
+    obst_thres = 0.15
+    
+  elif ts_name == "random32L_10":  # cov=2e-4
+    obst_thres = 0.2
+
 
   grids = GenerateRandomGrids(gridx,gridy,obst_thres)
   starts, goals = GenStartGoals(grids, ntest)
@@ -139,7 +195,7 @@ def main_gen_tests(ts_name):
   fig = plt.figure(figsize=(4,4))
   xx = np.linspace(0,1,num=npix)
   yy = np.linspace(0,1,num=npix)
-  Y,X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
+  X,Y = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next. # no it's not. still x,y
   pf = instances["obs_pf"]
   print("pf.shape = ", pf.shape)
   plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
@@ -156,4 +212,28 @@ if __name__ == "__main__":
   # main_gen_tests("random32A")
   # main_gen_tests("random32B")
   # main_gen_tests("random32C")
-  main_gen_tests("random32D")
+  # main_gen_tests("random32D")
+  # main_gen_tests("random32E")
+  # main_gen_tests("random32F")
+  # main_gen_tests("random32G")
+  # main_gen_tests("random32H")
+  # main_gen_tests("random32I")
+  # main_gen_tests("random32J")
+
+  # main_gen_tests("random32AA")
+  # main_gen_tests("random32K_1")
+  # main_gen_tests("random32K_2")
+  # main_gen_tests("random32K_3")
+  # main_gen_tests("random32K_4")
+  # main_gen_tests("random32K_5")
+  # main_gen_tests("random32K_6")
+  # main_gen_tests("random32L_1")
+  # main_gen_tests("random32L_2")
+  # main_gen_tests("random32L_3")
+  # main_gen_tests("random32L_4")
+  # main_gen_tests("random32L_5")
+  # main_gen_tests("random32L_6")
+  # main_gen_tests("random32L_7")
+  # main_gen_tests("random32L_8")
+  main_gen_tests("random32L_9")
+  main_gen_tests("random32L_10")

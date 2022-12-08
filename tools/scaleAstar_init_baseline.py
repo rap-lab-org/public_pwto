@@ -226,8 +226,8 @@ class AStar:
         idx = 0
         for p in plist:
 
-            px.insert(0, (p[0]+1)*(1.0/npix))
-            py.insert(0, (p[1]+1)*(1.0/npix))
+            px.insert(0, (p[1]+1)*(1.0/npix))
+            py.insert(0, (p[0]+1)*(1.0/npix))
 
         node_num = len(px)
 
