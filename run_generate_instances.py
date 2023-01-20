@@ -117,6 +117,26 @@ def main_gen_tests(ts_name):
   elif ts_name == "random32B":
     obst_thres = 0.10
   elif ts_name == "random32C":
+    obst_thres = 0.20
+  elif ts_name == "random32E":  # very sparse map
+    obst_thres = 0.05
+  elif ts_name == "random32F":  # very sparse map
+    obst_thres = 0.05
+  elif ts_name == "random32G":  # very sparse map
+    obst_thres = 0.10
+  elif ts_name == "random32H":  # very sparse map
+    obst_thres = 0.18
+  elif ts_name == "random32I":  # very sparse map
+    obst_thres = 0.18
+  elif ts_name == "random32J":  # cov=1e-3
+    obst_thres = 0.18
+
+  elif ts_name == "random32AA":  # cov=6e-4
+    obst_thres = 0.20
+
+  elif ts_name == "random32K_1":  # cov=5e-4
+    obst_thres = 0.20
+  elif ts_name == "random32K_2":  # cov=5e-4
     obst_thres = 0.15
   elif ts_name == "random32D":
     obst_thres = 0.20

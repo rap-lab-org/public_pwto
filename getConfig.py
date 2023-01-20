@@ -500,7 +500,7 @@ class Config():
 		configs["emoa_path"] = "../public_emoa/build/run_emoa"
 		configs["iters_per_episode"] = 100
 		# configs["optm_weights"] = [0.01, 5000, 10] # [0.01, 5000, 200]
-		configs["optm_weights"] = [0.05, 1000, 10]
+		configs["optm_weights"] = [0.05, 1000, 50]
 		# w1 = 0.01 # control cost, for the u terms.
 		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
 		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
@@ -508,7 +508,7 @@ class Config():
 		configs["hausdorf_filter_thres"] = 8
 		# configs["obst_cov_val"] = 2*1e-4
 		configs["obst_cov_val"] = obs.FIX_COV_VAL #2*1e-4
-		configs["vu_bounds"] = np.array([1/mapscale, 7.33, 2.2/mapscale, 1]) # v,w,ua,uw
+		configs["vu_bounds"] = np.array([1/mapscale, 1.57, 2.2/mapscale, 1]) # v,w,ua,uw
 		# Use 0.8 m/s^2 as the max acceleration is reasonable 
 		
 		weight_list = list()
@@ -542,7 +542,7 @@ class Config():
 		configs["npix"] = 200 #int(mapscale/dt)+20
 		configs["emoa_path"] = "../public_emoa/build/run_emoa"
 		configs["iters_per_episode"] = 100
-		configs["optm_weights"] = [0.05, 1000, 10]
+		configs["optm_weights"] = [0.05, 1000, 50]
 		# w1 = 0.01 # control cost, for the u terms.
 		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
 		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
@@ -550,7 +550,7 @@ class Config():
 		configs["hausdorf_filter_thres"] = 8
 		# configs["obst_cov_val"] = 2*1e-4
 		configs["obst_cov_val"] = obs.FIX_COV_VAL #2*1e-4
-		configs["vu_bounds"] = np.array([1/mapscale, 7.33, 2.2/mapscale, 1]) # v,w,ua,uw
+		configs["vu_bounds"] = np.array([1/mapscale, 1.57, 2.2/mapscale, 1]) # v,w,ua,uw
 		# Use 0.8 m/s^2 as the max acceleration is reasonable 
 		
 		weight_list = list()
@@ -584,7 +584,7 @@ class Config():
 		configs["npix"] = 200 #int(mapscale/dt)+20
 		configs["emoa_path"] = "../public_emoa/build/run_emoa"
 		configs["iters_per_episode"] = 100
-		configs["optm_weights"] = [0.05, 1000, 10]
+		configs["optm_weights"] = [0.05, 1000, 50]
 		# w1 = 0.01 # control cost, for the u terms.
 		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
 		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
@@ -592,7 +592,7 @@ class Config():
 		configs["hausdorf_filter_thres"] = 8
 		# configs["obst_cov_val"] = 2*1e-4
 		configs["obst_cov_val"] = obs.FIX_COV_VAL #2*1e-4
-		configs["vu_bounds"] = np.array([1/mapscale, 7.33, 2.2/mapscale, 1]) # v,w,ua,uw
+		configs["vu_bounds"] = np.array([1/mapscale, 1.57, 2.2/mapscale, 1]) # v,w,ua,uw
 		# Use 0.8 m/s^2 as the max acceleration is reasonable 
 		
 		weight_list = list()
@@ -626,7 +626,7 @@ class Config():
 		configs["npix"] = 200 #int(mapscale/dt)+20
 		configs["emoa_path"] = "../public_emoa/build/run_emoa"
 		configs["iters_per_episode"] = 100
-		configs["optm_weights"] = [0.05, 1000, 10]
+		configs["optm_weights"] = [0.05, 1000, 50]
 		# w1 = 0.01 # control cost, for the u terms.
 		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
 		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
@@ -634,7 +634,7 @@ class Config():
 		configs["hausdorf_filter_thres"] = 8
 		# configs["obst_cov_val"] = 2*1e-4
 		configs["obst_cov_val"] = obs.FIX_COV_VAL #2*1e-4
-		configs["vu_bounds"] = np.array([1/mapscale, 7.33, 2.2/mapscale, 1]) # v,w,ua,uw
+		configs["vu_bounds"] = np.array([1/mapscale, 1.57, 2.2/mapscale, 1]) # v,w,ua,uw
 		# Use 0.8 m/s^2 as the max acceleration is reasonable 
 		
 		weight_list = list()

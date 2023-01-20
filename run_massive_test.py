@@ -579,6 +579,43 @@ def main_compare_cvg_iters():
   # print("DirCol-linear > 2*PWDC", np.sum(mat_cvg_data[:,2] > 2*mat_cvg_data[:,0]))
   # print("DirCol-random > 2*PWDC", np.sum(mat_cvg_data[:,3] > 2*mat_cvg_data[:,0]))
 
+  with open(configs["folder"]+"converge_iters_wA_vs_PWTO.txt", 'w') as f:
+    f.write("#iters, DirCol-wA* > 2*PWDC = " + str( np.sum(mat_cvg_data[:,1] > 2*mat_cvg_data[:,0]) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,1] > 2*mat_cvg_data[:,0])/succ_count) )
+    f.write("\n")
+    f.write("#iters, DirCol-wA* fail to converge = " + str( np.sum(mat_cvg_data[:,1]==np.inf) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,1]==np.inf)/succ_count) )
+    f.write("\n")
+    ct = np.sum(mat_cost_data[:,1] > 2*mat_cost_data[:,0]) + np.sum(mat_cost_data[:,2] > 2*mat_cost_data[:,0]) + np.sum(mat_cost_data[:,3] > 2*mat_cost_data[:,0]) 
+    f.write("#costs, all baselines > 2*PWDC = " + str(ct) + ", percentage = "+str(ct*1.0/succ_count/3) )
+    f.write("\n")
+    ct = np.sum(mat_cost_data[:,1] > 1*mat_cost_data[:,0]) + np.sum(mat_cost_data[:,2] > 1*mat_cost_data[:,0]) + np.sum(mat_cost_data[:,3] > 1*mat_cost_data[:,0]) 
+    f.write("#costs, all baselines > 1*PWDC = " + str(ct) + ", percentage = "+str(ct*1.0/succ_count/3) )
+    f.write("\n")
+
+  with open(configs["folder"]+"converge_iters_wA_vs_PWTO.txt", 'w') as f:
+    f.write("#iters, DirCol-wA* > 2*PWDC = " + str( np.sum(mat_cvg_data[:,1] > 2*mat_cvg_data[:,0]) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,1] > 2*mat_cvg_data[:,0])/succ_count) )
+    f.write("\n")
+    f.write("#iters, DirCol-wA* fail to converge = " + str( np.sum(mat_cvg_data[:,1]==np.inf) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,1]==np.inf)/succ_count) )
+    f.write("\n")
+
+    f.write("#iters, DirCol-tRRT > 2*PWDC = " + str( np.sum(mat_cvg_data[:,2] > 2*mat_cvg_data[:,0]) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,2] > 2*mat_cvg_data[:,0])/succ_count) )
+    f.write("\n")
+    f.write("#iters, DirCol-tRRT fail to converge = " + str( np.sum(mat_cvg_data[:,2]==np.inf) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,2]==np.inf)/succ_count) )
+    f.write("\n")
+
+    ct = np.sum(mat_cost_data[:,1] > 2*mat_cost_data[:,0]) \
+       + np.sum(mat_cost_data[:,2] > 2*mat_cost_data[:,0]) \
+       + np.sum(mat_cost_data[:,3] > 2*mat_cost_data[:,0]) \
+       + np.sum(mat_cost_data[:,4] > 2*mat_cost_data[:,0]) 
+    f.write("#costs, all baselines > 2*PWDC = " + str(ct) + ", percentage = "+str(ct*1.0/succ_count/4) )
+    f.write("\n")
+    ct = np.sum(mat_cost_data[:,1] > 1*mat_cost_data[:,0]) \
+       + np.sum(mat_cost_data[:,2] > 1*mat_cost_data[:,0]) \
+       + np.sum(mat_cost_data[:,3] > 1*mat_cost_data[:,0]) \
+       + np.sum(mat_cost_data[:,4] > 1*mat_cost_data[:,0]) 
+    f.write("#costs, all baselines > 1*PWDC = " + str(ct) + ", percentage = "+str(ct*1.0/succ_count/4) )
+    f.write("\n")
+
+
 
   with open(configs["folder"]+"converge_iters_wA_vs_PWTO.txt", 'w') as f:
     f.write("#iters, DirCol-wA* > 2*PWDC = " + str( np.sum(mat_cvg_data[:,1] > 2*mat_cvg_data[:,0]) ) + ", percentage = "+str(np.sum(mat_cvg_data[:,1] > 2*mat_cvg_data[:,0])/succ_count) )

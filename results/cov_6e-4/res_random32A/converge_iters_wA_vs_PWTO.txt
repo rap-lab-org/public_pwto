@@ -1,0 +1,4 @@
+#iters, DirCol-wA* > 2*PWDC = 7, percentage = 0.7
+#iters, DirCol-wA* fail to converge = 3, percentage = 0.3
+#costs, all baselines > 2*PWDC = 6, percentage = 0.19999999999999998
+#costs, all baselines > 1*PWDC = 23, percentage = 0.7666666666666666
