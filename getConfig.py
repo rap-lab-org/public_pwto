@@ -130,6 +130,37 @@ class Config():
 			self.configs = self.getConfigRandom32L_10()
 
 
+		elif mapname == 'random32A_refactor':
+			self.configs = self.getConfigRandom32A_refactor()
+		elif mapname == 'random32D_refactor':
+			self.configs = self.getConfigRandom32D_refactor()
+
+		elif mapname == 'random32E_refactor':
+			self.configs = self.getConfigRandom32E_refactor()
+
+		elif mapname == 'random32F_refactor':
+			self.configs = self.getConfigRandom32F_refactor()
+
+		elif mapname == 'random32I_refactor':
+			self.configs = self.getConfigRandom32I_refactor()
+
+		elif mapname == 'random32L_8_refactor':
+			self.configs = self.getConfigRandom32L_8_refactor()
+
+		elif mapname == 'random32L_9_refactor':
+			self.configs = self.getConfigRandom32L_9_refactor()
+
+		elif mapname == 'random32M_refactor':
+			self.configs = self.getConfigRandom32M_refactor()
+		elif mapname == 'random32N_refactor':
+			self.configs = self.getConfigRandom32N_refactor()
+		elif mapname == 'random32O_refactor':
+			self.configs = self.getConfigRandom32O_refactor()
+
+		elif mapname == 'random32_simu_refactor':
+			self.configs = self.getConfigRandom32_simu_refactor()
+
+
 		elif mapname == 'random32_trrt':
 			self.configs = self.getConfigRandom32TRRT()
 
@@ -146,6 +177,13 @@ class Config():
 			self.configs = self.getConfigRandom32B_trrt()
 		elif mapname == 'random32C_trrt':
 			self.configs = self.getConfigRandom32C_trrt()
+
+
+
+		elif mapname == 'random16_refactor':
+			self.configs = self.getConfigRandom16_refactor()
+		elif mapname == 'random32_refactor':
+			self.configs = self.getConfigRandom32_refactor()
 
 		if self.configs is None:
 		    print("[ERROR] PWDC, please input the right mapname")
@@ -1904,6 +1942,549 @@ class Config():
 		# weight_list.append([0.2,0.8])
 		# weight_list.append([0.9,0.1])
 		# weight_list.append([0.7,0.3])
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+
+
+	def getConfigRandom16_refactor(self):
+		"""
+		"""
+
+		folder = "results/res_random16_refactor/"
+
+		mapscale = 6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		configs["map_grid_path"] = configs["folder"] + "random-16-16-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.9, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = int(mapscale/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.05, 5000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+		# configs["obst_cov_val"] = 2*1e-4
+		configs["obst_cov_val"] = 12*1e-4
+		configs["vu_bounds"] = np.array([1/mapscale, 7.33, 2.2/mapscale, 1]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+
+	def getConfigRandom32_refactor(self):
+		"""
+		random 32x32, obstacle density 20.
+		"""
+
+		folder = "results/res_random32_refactor/"
+		mapscale = 18.6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = int(mapscale/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.01, 5000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+		# configs["obst_cov_val"] = 2*1e-4
+		configs["obst_cov_val"] = 2*1e-4
+		configs["vu_bounds"] = np.array([1/mapscale, 7.33, 2.2/mapscale, 1]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
+		# weight_list.append([0.3,0.7])
+		# weight_list.append([0.2,0.8])
+		# weight_list.append([0.9,0.1])
+		# weight_list.append([0.7,0.3])
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+
+	def getConfigRandom32L_8_refactor(self):
+
+		"""
+		Use smaller v and w
+		"""
+
+		folder = "results/res_random32L_8_refactor/weight=[0.05, 1000, 200] w=0.5uw=1/"
+		mapscale = 18.6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		# configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = 200 #int(mapsca``le/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.05, 1000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+
+		# configs["obst_cov_val"] = 1*1e-4
+		configs["obst_cov_val"] = obs.FIX_COV_VAL #2*1e-4
+
+
+		configs["vu_bounds"] = np.array([1/mapscale, 0.5, 2.2/mapscale, 1]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+
+
+	def getConfigRandom32L_9_refactor(self):
+
+		"""
+		Use smaller v and w
+		"""
+
+		folder = "results/res_random32L_9_refactor/weight=[0.05, 1000, 200] w=0.2uw=0.2/"
+		mapscale = 18.6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		# configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = 200 #int(mapscale/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.05, 1000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+
+		# configs["obst_cov_val"] = 1*1e-4
+		configs["obst_cov_val"] = obs.FIX_COV_VAL #2*1e-4
+
+
+		configs["vu_bounds"] = np.array([1/mapscale, 0.2, 2.2/mapscale, 0.2]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+
+	def getConfigRandom32I_refactor(self):
+
+		"""
+		Use smaller v and w
+		"""
+
+		folder = "results/res_random32I_refactor/weight=[0.05, 1000, 200] w=1uw=0.5/"
+		mapscale = 18.6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		# configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = 200 #int(mapscale/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.05, 1000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+
+		# configs["obst_cov_val"] = 1*1e-4
+		configs["obst_cov_val"] = obs.FIX_COV_VAL #2*1e-4
+
+
+		configs["vu_bounds"] = np.array([1/mapscale, 1, 2.2/mapscale, 0.5]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+
+	def getConfigRandom32F_refactor(self):
+
+		"""
+		Use smaller v and w
+		"""
+
+		folder = "results/res_random32F_refactor/weight=[0.05, 1000, 200] w=0.5uw=0.5/"
+		mapscale = 18.6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		# configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = 200 #int(mapscale/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.05, 1000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+
+		# configs["obst_cov_val"] = 1*1e-4
+		configs["obst_cov_val"] = obs.FIX_COV_VAL #2*1e-4
+
+
+		configs["vu_bounds"] = np.array([1/mapscale, 0.5, 2.2/mapscale, 0.5]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+
+	def getConfigRandom32E_refactor(self):
+
+		"""
+		Use smaller v and w
+		"""
+
+		folder = "results/res_random32E_refactor/weight=[0.05, 1000, 200] w=1uw=0.5/"
+		mapscale = 18.6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		# configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = 200 #int(mapscale/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.05, 1000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+
+		# configs["obst_cov_val"] = 1*1e-4
+		configs["obst_cov_val"] = obs.FIX_COV_VAL #2*1e-4
+
+
+		configs["vu_bounds"] = np.array([1/mapscale, 1, 2.2/mapscale, 0.5]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+	def getConfigRandom32A_refactor(self):
+
+		"""
+		Use smaller v and w
+		"""
+
+		folder = "results/res_random32A_refactor/weight=[0.05, 1000, 200] w=1uw=0.5/"
+		mapscale = 18.6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		# configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = 200 #int(mapscale/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.05, 1000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+
+		# configs["obst_cov_val"] = 1*1e-4
+		configs["obst_cov_val"] = obs.FIX_COV_VAL #2*1e-4
+
+
+		configs["vu_bounds"] = np.array([1/mapscale, 1, 2.2/mapscale, 0.5]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+	def getConfigRandom32M_refactor(self):
+
+		"""
+		Use smaller v and w
+		"""
+
+		folder = "results/res_random32M_refactor/weight=[0.05, 1000, 200] w=1uw=0.5/"
+		mapscale = 18.6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		# configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = 200 #int(mapscale/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.05, 1000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+
+		# configs["obst_cov_val"] = 1*1e-4
+		configs["obst_cov_val"] = 10*1e-4
+
+
+		configs["vu_bounds"] = np.array([1/mapscale, 1, 2.2/mapscale, 0.5]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+	def getConfigRandom32N_refactor(self):
+
+		"""
+		Use smaller v and w
+		"""
+
+		folder = "results/res_random32N_refactor/weight=[0.05, 1000, 200] w=1uw=0.5/"
+		mapscale = 18.6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		# configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = 200 #int(mapscale/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.05, 1000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+
+		# configs["obst_cov_val"] = 1*1e-4
+		configs["obst_cov_val"] = 12*1e-4
+		configs["vu_bounds"] = np.array([1/mapscale, 1, 2.2/mapscale, 0.5]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+	def getConfigRandom32O_refactor(self):
+
+		"""
+		Use smaller v and w
+		"""
+
+		folder = "results/res_random32O_refactor/weight=[0.05, 1000, 200] w=1uw=0.5/"
+		mapscale = 18.6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		# configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = 200 #int(mapscale/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.05, 1000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+
+		# configs["obst_cov_val"] = 1*1e-4
+		configs["obst_cov_val"] = 20*1e-4
+		configs["vu_bounds"] = np.array([1/mapscale, 1, 2.2/mapscale, 0.5]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+
+	def getConfigRandom32D_refactor(self):
+
+		"""
+		Use smaller v and w
+		"""
+
+		folder = "results/res_random32D_refactor/weight=[0.05, 1000, 200] w=1uw=0.5/"
+		mapscale = 18.6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		# configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = 200 #int(mapscale/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.05, 1000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+
+		# configs["obst_cov_val"] = 1*1e-4
+		configs["obst_cov_val"] = 2*1e-4
+		configs["vu_bounds"] = np.array([1/mapscale, 1, 2.2/mapscale, 0.5]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
+		configs["Astar_weight_list"] = weight_list
+
+		return configs
+
+
+	def getConfigRandom32_simu_refactor(self):
+
+		"""
+		Use smaller v and w
+		"""
+
+		folder = "results/res_random32_simu_refactor/weight=[0.05, 1000, 200] w=1uw=0.5/"
+		mapscale = 18.6
+		dt = 0.1
+
+		configs = dict()
+		configs["folder"] = folder
+		# configs["map_grid_path"] = configs["folder"] + "random-32-32-20.map"
+		configs["n"] = 5
+		configs["m"] = 2
+		configs["Sinit"] = np.array([0.1, 0.1, 0, 0, 0])
+		configs["Sgoal"] = np.array([0.9, 0.8, 0 ,0, 0])
+		configs["interval_value"] = dt
+		configs["npix"] = 206 #int(mapscale/dt)+20
+		configs["emoa_path"] = "../public_emoa/build/run_emoa"
+		configs["iters_per_episode"] = 100
+		configs["optm_weights"] = [0.05, 1000, 200]
+		# w1 = 0.01 # control cost, for the u terms.
+		# w2 = 5000 # obstacle cost, larger = stay more far away from obstacles
+		# w3 = 200 # stay close to the initial guess, larger = stay closer to the initial guess.
+		configs["total_epi"] = 10
+		configs["hausdorf_filter_thres"] = 8
+
+		# configs["obst_cov_val"] = 1*1e-4
+		configs["obst_cov_val"] = 2*1e-4
+		configs["vu_bounds"] = np.array([1/mapscale, 1, 2.2/mapscale, 0.5]) # v,w,ua,uw
+		# Use 0.8 m/s^2 as the max acceleration is reasonable 
+		
+		weight_list = list()
+		# weight_list.append([0.5,0.5])
 		configs["Astar_weight_list"] = weight_list
 
 		return configs

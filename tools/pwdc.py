@@ -13,9 +13,12 @@ from pywsto import context
 # import context
 import misc
 import obstacle as obs
-import emoa_py_api as emoa
+# import emoa_py_api as emoa
+import emoa_py_api_refactor as emoa
 import optm_ddc2
 import opty.utils 
+
+
 
 ## TODO, try 8-connected grid.
 
@@ -139,6 +142,12 @@ class PWDC():
     c1 = np.ones([npix,npix]) # distance
     c2 = self.obs_pf # dist to obstacle
 
+    # 3-d cost with the last term theta
+    # ntheta = 8
+    # c1 = np.ones([ntheta,npix,npix]) 
+    # obs = np.expand_dims(self.obs_pf, axis=0)
+    # c2 = np.repeat(obs, ntheta, axis=0)
+
     ## start and goal node.
     # vo = int(Sinit[0]*npix*npix + Sinit[1]*npix)
     # vd = int(Sgoal[0]*npix*npix + Sgoal[1]*npix)
@@ -147,7 +156,6 @@ class PWDC():
 
     print("npix = ", npix)
     print(" vo, vd = ", vo, vd)
-
 
     ## run EMOA*
     self.emoa_res_dict = dict()
@@ -163,9 +171,13 @@ class PWDC():
     py = []
     px = []
     idx = 0
-    for v in p:
-      py.append( (v%npix)*(1/npix) )
-      px.append( int(np.floor(v/npix))*(1.0/npix) )
+    for v in p:     
+      # seems not right
+      # py.append( (v%npix)*(1/npix) )
+      # px.append( int(np.floor(v/npix))*(1.0/npix) )
+
+      py.append( ((v%(npix*npix))%npix)*(1/npix) )
+      px.append( int(np.floor((v%(npix*npix))/npix))*(1.0/npix) )
     return px,py
     # not right?
 
@@ -302,7 +314,7 @@ def plotTraj(pf, configs, p, tj, save_path, fig_sz):
   d = configs["Sgoal"]
   xx = np.linspace(0,1,num=configs["npix"])
   yy = np.linspace(0,1,num=configs["npix"])
-  X,Y = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
+  Y, X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
   plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
   plt.plot(s[0],s[1],"ro")
   plt.plot(d[0],d[1],"r*")
@@ -323,7 +335,7 @@ def plotTrajs(pf, configs, tjs, save_path, fig_sz):
   d = configs["Sgoal"]
   xx = np.linspace(0,1,num=configs["npix"])
   yy = np.linspace(0,1,num=configs["npix"])
-  X,Y = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
+  Y, X = np.meshgrid(xx,yy) # this seems to be the correct way... Y first, X next.
   plt.contourf(X, Y, pf, levels=np.linspace(np.min(pf), np.max(pf),200), cmap='gray_r')
   plt.plot(s[0],s[1],"ro")
   plt.plot(d[0],d[1],"r*")

@@ -52,11 +52,12 @@ class transitionRRT:
         self._initMap()
 
         # RRT
-        self.max_iter = 1000000
-        self.goal_sample_rate = 30
+        self.max_iter = 6000
+        self.goal_sample_rate = 50
         self.expand_dis = 1
         self.obstacleList = [] # obstacleList:obstacle Positions [[x,y,size],...]
         self.connect_circle_dist = 15
+        self.final_dis_range = 6
 
 
     def _initMap(self):
@@ -125,6 +126,7 @@ class transitionRRT:
 
         self.node_list = [self.start]
         for i in range(self.max_iter):
+            print('ite: ',i)
             rnd = self.get_random_point()
             print('-- random node: ---',"[", rnd, "]")
             nearest_ind = self.get_nearest_list_index(self.node_list, rnd)
@@ -141,7 +143,7 @@ class transitionRRT:
             c_new = self.get_point_cost(new_node.x, new_node.y)
 
             # cmax = 0.5 origin
-            [trans_test, n_fail, T] = self.transition_test(c_near, c_new, d, cmax=0.8, k=2, t=T, nFail=n_fail)
+            [trans_test, n_fail, T] = self.transition_test(c_near, c_new, d, cmax=0.7, k=2, t=T, nFail=n_fail)
             print('--trans-test:', trans_test)
             print('--------------------------------------')
             if self.check_collision(new_node, self.obstacleList) and trans_test and \
@@ -163,7 +165,8 @@ class transitionRRT:
             if not search_until_maxiter and new_node:  # check reaching the goal
                 # d, _ = self.calc_dist_to_end(new_node)
                 d = self.calc_dist_to_goal(new_node.x,new_node.y)
-                if d <= self.expand_dis:
+                # if d <= self.expand_dis:
+                if d <= self.final_dis_range:
                     return self.generate_final_course(len(self.node_list) - 1)
 
         print("reached max iteration")
@@ -203,7 +206,7 @@ class transitionRRT:
     def get_point_cost(self, x, y):
         j = list(self.map_x_span).index(min(self.map_x_span, key=lambda temp: abs(temp - x)))
         i = list(self.map_y_span).index(min(self.map_y_span, key=lambda temp: abs(temp - y)))
-        return self.cost_map[i, j]
+        return self.cost_map[j, i] # pay attention I changed the order here
 
     def calc_distance_and_angle(self, from_node, to_node):
         dx = to_node.x - from_node.x
@@ -374,10 +377,12 @@ class transitionRRT:
 
     def search_best_goal_node(self):
         dist_to_goal_list = [self.calc_dist_to_goal(n.x, n.y) for n in self.node_list]
-        goal_inds = [dist_to_goal_list.index(i) for i in dist_to_goal_list if i <= self.expand_dis]
+        goal_inds = [dist_to_goal_list.index(i) for i in dist_to_goal_list if i <= self.final_dis_range]
 
         if not goal_inds:
-            return None
+            closest_idx = min(dist_to_goal_list) 
+            goal_inds = [dist_to_goal_list.index(i) for i in dist_to_goal_list if i ==closest_idx]
+            # return None
 
         min_cost = min([self.node_list[i].cost for i in goal_inds])
         for i in goal_inds:
@@ -390,7 +395,7 @@ class transitionRRT:
 
     def draw_graph(self, rnd=None):
         plt.clf()
-        plt.contourf(self.map_mesh_grid[0], self.map_mesh_grid[1], self.cost_map)
+        plt.contourf(self.map_mesh_grid[1], self.map_mesh_grid[0], self.cost_map)
         if rnd is not None:
             plt.plot(rnd[0], rnd[1], "^k")
         for node in self.node_list:
@@ -421,8 +426,8 @@ class transitionRRT:
         idx = 0
         for p in plist:
 
-            px.insert(0, (p[1]+1)*(1.0/npix))
-            py.insert(0, (p[0]+1)*(1.0/npix))
+            px.insert(0, (p[0]+1)*(1.0/npix))
+            py.insert(0, (p[1]+1)*(1.0/npix))
 
         node_num = len(px)
 
@@ -512,6 +517,7 @@ class transitionRRT:
         self.path = self.planning()
         if self.path is None:
             print("Cannot find path")
+            return self.sol
         else:
             print("found path!! The node number is ",len(self.path))
             self.draw_graph()

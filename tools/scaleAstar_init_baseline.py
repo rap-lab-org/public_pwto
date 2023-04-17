@@ -81,8 +81,8 @@ class AStar:
       self.s_start = (int(Sinit[0]*npix)-1, int(Sinit[1]*npix)-1)
       self.s_goal  = (int(Sgoal[0]*npix)-1, int(Sgoal[1]*npix)-1)
 
-      print(self.s_start)
-      print(self.s_goal)
+      print("start: ", self.s_start)
+      print("start: ", self.s_goal)
       return
 
 
@@ -226,8 +226,8 @@ class AStar:
         idx = 0
         for p in plist:
 
-            px.insert(0, (p[1]+1)*(1.0/npix))
-            py.insert(0, (p[0]+1)*(1.0/npix))
+            px.insert(0, (p[0]+1)*(1.0/npix))
+            py.insert(0, (p[1]+1)*(1.0/npix))
 
         node_num = len(px)
 
@@ -239,6 +239,7 @@ class AStar:
         generate initial guess
         """
         px,py,node_num = self._path2xy(self.Astar_pathlist[k])
+        print("path length: ", node_num)
         return misc.path2InitialGuess(\
           px, py, node_num, self.cfg["n"], self.cfg["m"], self.cfg["interval_value"]),node_num
 

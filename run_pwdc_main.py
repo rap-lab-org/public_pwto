@@ -19,7 +19,6 @@ import scaleAstar_init_baseline as scaleAstar
 import getConfig
 
 
-
 mapname = 'random32_1'
 # mapname = 'random16_1'
 # mapname = 'random16_simple'
@@ -324,13 +323,11 @@ def plot_pareto_paths():
 
 if __name__ == "__main__":
 
-  # test_pwdc()
+  test_pwdc()
 
-  # test_pwdc_plot()
+  test_pwdc_plot()
 
-  # test_and_plot_naive_init()
-
-   # test_and_plot_kAstat_init()
+  test_and_plot_naive_init()
 
   test_and_plot_scaleAstat_init()
 

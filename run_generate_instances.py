@@ -195,6 +195,12 @@ def main_gen_tests(ts_name):
   elif ts_name == "random32L_10":  # cov=2e-4
     obst_thres = 0.2
 
+  elif ts_name == "random32M":  # cov=10e-4
+    obst_thres = 0.03
+  elif ts_name == "random32N":  # cov=12e-4
+    obst_thres = 0.02
+  elif ts_name == "random32O":  # cov=20e-4
+    obst_thres = 0.015
 
   grids = GenerateRandomGrids(gridx,gridy,obst_thres)
   starts, goals = GenStartGoals(grids, ntest)
@@ -255,5 +261,9 @@ if __name__ == "__main__":
   # main_gen_tests("random32L_6")
   # main_gen_tests("random32L_7")
   # main_gen_tests("random32L_8")
-  main_gen_tests("random32L_9")
-  main_gen_tests("random32L_10")
+  # main_gen_tests("random32L_9")
+  # main_gen_tests("random32L_10")
+
+  # main_gen_tests("random32M")
+  # main_gen_tests("random32N")
+  main_gen_tests("random32O")

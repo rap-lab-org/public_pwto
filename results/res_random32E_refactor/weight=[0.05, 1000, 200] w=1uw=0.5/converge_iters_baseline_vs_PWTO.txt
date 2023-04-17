@@ -1,0 +1,6 @@
+#iters, DirCol-wA* > 2*PWDC = 8, percentage = 0.8888888888888888
+#iters, DirCol-wA* fail to converge = 3, percentage = 0.3333333333333333
+#iters, DirCol-tRRT > 2*PWDC = 8, percentage = 0.8888888888888888
+#iters, DirCol-tRRT fail to converge = 6, percentage = 0.6666666666666666
+#iters, all baselines > 2*PWDC = 16, percentage = 0.8888888888888888
+#iters, all baselines > 1*PWDC = 17, percentage = 0.9444444444444444

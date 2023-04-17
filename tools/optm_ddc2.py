@@ -122,6 +122,7 @@ def dirCol_ddc2(initial_guess, Sinit, Sgoal, w, obss, num_nodes, interval_value,
 
   # Specify the symbolic instance constraints, i.e. initial and end
   # conditions.
+  # TODO: ADD MORE CONTSTRAINT OF INITIAL AND GOAL THETA
   instance_constraints = (sx(0.0) - Sinit[0],
                           sy(0.0) - Sinit[1],
                           # stheta(0.0) - Sinit[2],

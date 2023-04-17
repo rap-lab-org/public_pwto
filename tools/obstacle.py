@@ -6,7 +6,7 @@ import random
 
 FIX_COV_VAL = 6*1e-4
 
-FIX_COV_VAL = 2e-4
+FIX_COV_VAL = 20e-4
 
 class ObstSet:
   

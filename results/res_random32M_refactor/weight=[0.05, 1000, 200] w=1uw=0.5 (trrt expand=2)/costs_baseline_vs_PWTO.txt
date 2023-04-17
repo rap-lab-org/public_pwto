@@ -1,0 +1,10 @@
+#costs, DirCol-wA* > 2*PWDC = 9, percentage = 0.9
+#costs, DirCol-wA* fail to converge = 4, percentage = 0.4
+#costs, DirCol-tRRT > 2*PWDC = 10, percentage = 1.0
+#costs, DirCol-tRRT fail to converge = 10, percentage = 1.0
+#costs, DirCol-linear > 2*PWDC = 4, percentage = 0.4
+#costs, DirCol-linear fail to converge = 0, percentage = 0.0
+#costs, DirCol-random > 2*PWDC = 5, percentage = 0.5
+#costs, DirCol-random fail to converge = 0, percentage = 0.0
+#costs, all baselines > 2*PWDC = 28, percentage = 0.7
+#costs, all baselines > 1*PWDC = 33, percentage = 0.825
